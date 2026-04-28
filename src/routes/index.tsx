@@ -4,7 +4,7 @@ import { ArrowRight, BookOpen, FileText, GraduationCap, Sparkles, Star, Users, Y
 import { SiteLayout } from "@/components/site/Layout";
 import { SocialRow } from "@/components/site/Footer";
 import { VideoCard, sampleVideos } from "@/components/site/VideoCard";
-import heroImg from "@/assets/yashwant-hero.jpg";
+import heroImg from "@/assets/yashwant-profile.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -90,7 +90,7 @@ function Index() {
                 alt="Yashwant Singh — educator"
                 width={1024}
                 height={1024}
-                className="w-full h-auto"
+                className="w-full h-auto object-cover aspect-square"
               />
             </div>
             <div className="absolute -bottom-6 -left-6 bg-card border border-border rounded-2xl shadow-soft px-4 py-3 flex items-center gap-3 animate-fade-in">
