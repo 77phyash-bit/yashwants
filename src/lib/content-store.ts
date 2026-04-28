@@ -1,38 +1,30 @@
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type UploadedVideo = {
-  id: string; // YouTube video id
+  id: string; // row id
+  youtube_id: string;
   title: string;
-  tag?: string;
-  addedAt: number;
+  tag?: string | null;
+  created_at: string;
 };
 
 export type UploadedFile = {
   id: string;
   name: string;
-  type: string; // mime
+  type: string;
   size: number;
-  dataUrl: string; // base64 data URL stored in localStorage
-  addedAt: number;
+  storage_path: string;
+  public_url: string;
+  created_at: string;
 };
 
-const VIDEOS_KEY = "ys.uploads.videos";
-const FILES_KEY = "ys.uploads.files";
+const CHANGE_EVENT = "ys-content-change";
 
-function read<T>(key: string): T[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T[]) : [];
-  } catch {
-    return [];
+function notify() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
   }
-}
-
-function write<T>(key: string, value: T[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(value));
-  window.dispatchEvent(new CustomEvent("ys-content-change", { detail: { key } }));
 }
 
 export function extractYouTubeId(input: string): string | null {
@@ -56,65 +48,130 @@ export function extractYouTubeId(input: string): string | null {
   return null;
 }
 
+/* ---------- Videos ---------- */
+
 export function useUploadedVideos() {
-  const [videos, setVideos] = useState<UploadedVideo[]>(() => read<UploadedVideo>(VIDEOS_KEY));
+  const [videos, setVideos] = useState<UploadedVideo[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const handler = () => setVideos(read<UploadedVideo>(VIDEOS_KEY));
-    window.addEventListener("ys-content-change", handler);
-    window.addEventListener("storage", handler);
+    let active = true;
+    const load = async () => {
+      const { data, error } = await supabase
+        .from("uploaded_videos")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!active) return;
+      if (!error && data) setVideos(data as UploadedVideo[]);
+      setLoading(false);
+    };
+    load();
+    const handler = () => load();
+    window.addEventListener(CHANGE_EVENT, handler);
     return () => {
-      window.removeEventListener("ys-content-change", handler);
-      window.removeEventListener("storage", handler);
+      active = false;
+      window.removeEventListener(CHANGE_EVENT, handler);
     };
   }, []);
-  return videos;
+
+  return { videos, loading };
 }
 
-export function addVideo(v: Omit<UploadedVideo, "addedAt">) {
-  const all = read<UploadedVideo>(VIDEOS_KEY);
-  if (all.some((x) => x.id === v.id)) return;
-  write(VIDEOS_KEY, [{ ...v, addedAt: Date.now() }, ...all]);
+export async function addVideo(v: { youtube_id: string; title: string; tag?: string }) {
+  const { error } = await supabase.from("uploaded_videos").insert({
+    youtube_id: v.youtube_id,
+    title: v.title,
+    tag: v.tag || null,
+  });
+  if (error) throw error;
+  notify();
 }
 
-export function removeVideo(id: string) {
-  write(VIDEOS_KEY, read<UploadedVideo>(VIDEOS_KEY).filter((v) => v.id !== id));
+export async function removeVideo(id: string) {
+  const { error } = await supabase.from("uploaded_videos").delete().eq("id", id);
+  if (error) throw error;
+  notify();
 }
+
+/* ---------- Files ---------- */
 
 export function useUploadedFiles() {
-  const [files, setFiles] = useState<UploadedFile[]>(() => read<UploadedFile>(FILES_KEY));
+  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const handler = () => setFiles(read<UploadedFile>(FILES_KEY));
-    window.addEventListener("ys-content-change", handler);
-    window.addEventListener("storage", handler);
+    let active = true;
+    const load = async () => {
+      const { data, error } = await supabase
+        .from("uploaded_files")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!active) return;
+      if (!error && data) setFiles(data as UploadedFile[]);
+      setLoading(false);
+    };
+    load();
+    const handler = () => load();
+    window.addEventListener(CHANGE_EVENT, handler);
     return () => {
-      window.removeEventListener("ys-content-change", handler);
-      window.removeEventListener("storage", handler);
+      active = false;
+      window.removeEventListener(CHANGE_EVENT, handler);
     };
   }, []);
-  return files;
+
+  return { files, loading };
 }
 
-export function addFile(f: Omit<UploadedFile, "addedAt" | "id">) {
-  const all = read<UploadedFile>(FILES_KEY);
-  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  write(FILES_KEY, [{ ...f, id, addedAt: Date.now() }, ...all]);
+export async function uploadFile(
+  file: File,
+  onProgress?: (pct: number) => void
+): Promise<UploadedFile> {
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
+
+  // supabase-js v2 doesn't expose granular progress; emit start & end.
+  onProgress?.(10);
+  const { error: upErr } = await supabase.storage
+    .from("uploads")
+    .upload(path, file, {
+      cacheControl: "3600",
+      contentType: file.type || "application/octet-stream",
+      upsert: false,
+    });
+  if (upErr) throw upErr;
+  onProgress?.(80);
+
+  const { data: pub } = supabase.storage.from("uploads").getPublicUrl(path);
+  const publicUrl = pub.publicUrl;
+
+  const { data, error: insErr } = await supabase
+    .from("uploaded_files")
+    .insert({
+      name: file.name,
+      type: file.type || "application/octet-stream",
+      size: file.size,
+      storage_path: path,
+      public_url: publicUrl,
+    })
+    .select()
+    .single();
+  if (insErr) throw insErr;
+
+  onProgress?.(100);
+  notify();
+  return data as UploadedFile;
 }
 
-export function removeFile(id: string) {
-  write(FILES_KEY, read<UploadedFile>(FILES_KEY).filter((f) => f.id !== id));
-}
-
-export function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
+export async function removeFile(item: UploadedFile) {
+  await supabase.storage.from("uploads").remove([item.storage_path]);
+  const { error } = await supabase.from("uploaded_files").delete().eq("id", item.id);
+  if (error) throw error;
+  notify();
 }
 
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }
