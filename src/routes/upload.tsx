@@ -4,16 +4,28 @@ import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { Upload, Youtube, FileUp, Trash2, CheckCircle2, FileText, Image as ImageIcon, Video, File as FileIcon } from "lucide-react";
 import {
-  addFile,
+  Upload,
+  Youtube,
+  FileUp,
+  Trash2,
+  CheckCircle2,
+  FileText,
+  Image as ImageIcon,
+  Video,
+  File as FileIcon,
+  Cloud,
+  ExternalLink,
+} from "lucide-react";
+import {
   addVideo,
   extractYouTubeId,
-  fileToDataUrl,
   formatBytes,
   removeFile,
   removeVideo,
+  uploadFile,
   useUploadedFiles,
   useUploadedVideos,
 } from "@/lib/content-store";
@@ -22,7 +34,7 @@ export const Route = createFileRoute("/upload")({
   head: () => ({
     meta: [
       { title: "Upload — Yashwant Singh" },
-      { name: "description", content: "Upload videos and learning resources to your portfolio." },
+      { name: "description", content: "Upload videos, documents and resources to your portfolio." },
     ],
   }),
   component: UploadPage,
@@ -44,7 +56,10 @@ function UploadPage() {
             Add your <span className="gradient-text">content</span> in seconds.
           </h1>
           <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Paste a YouTube link or drop a file — it appears on your site instantly.
+            Paste a YouTube link or drop videos, PDFs, documents and images — they appear on your site instantly.
+          </p>
+          <p className="mt-3 text-xs text-muted-foreground inline-flex items-center gap-1.5 justify-center">
+            <Cloud className="w-3.5 h-3.5 text-primary" /> Stored in cloud · up to 500&nbsp;MB per file · shareable links
           </p>
         </div>
       </section>
@@ -65,7 +80,7 @@ function UploadPage() {
               tab === "file" ? "bg-background shadow-soft text-primary" : "text-foreground/70"
             }`}
           >
-            <FileUp className="w-4 h-4" /> File / Resource
+            <FileUp className="w-4 h-4" /> Files, Docs & Videos
           </button>
         </div>
 
@@ -79,9 +94,10 @@ function VideoUploader() {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
-  const videos = useUploadedVideos();
+  const [submitting, setSubmitting] = useState(false);
+  const { videos } = useUploadedVideos();
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     const id = extractYouTubeId(url);
     if (!id) {
@@ -92,11 +108,19 @@ function VideoUploader() {
       toast.error("Please add a title for the video.");
       return;
     }
-    addVideo({ id, title: title.trim(), tag: tag.trim() || undefined });
-    toast.success("Video added! It now appears on the Videos page.");
-    setUrl("");
-    setTitle("");
-    setTag("");
+    setSubmitting(true);
+    try {
+      await addVideo({ youtube_id: id, title: title.trim(), tag: tag.trim() || undefined });
+      toast.success("Video added! It now appears on the Videos page.");
+      setUrl("");
+      setTitle("");
+      setTag("");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Could not save video.";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -123,6 +147,7 @@ function VideoUploader() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Mastering Algebra in 10 minutes"
               className="h-11"
+              maxLength={200}
             />
           </div>
           <div>
@@ -132,10 +157,16 @@ function VideoUploader() {
               onChange={(e) => setTag(e.target.value)}
               placeholder="Math, Science, English…"
               className="h-11"
+              maxLength={40}
             />
           </div>
-          <Button type="submit" size="lg" className="w-full gradient-warm text-primary-foreground border-0 hover:opacity-90">
-            <Youtube className="w-4 h-4" /> Add to Videos
+          <Button
+            type="submit"
+            size="lg"
+            disabled={submitting}
+            className="w-full gradient-warm text-primary-foreground border-0 hover:opacity-90"
+          >
+            <Youtube className="w-4 h-4" /> {submitting ? "Adding…" : "Add to Videos"}
           </Button>
         </form>
       </Card>
@@ -154,7 +185,7 @@ function VideoUploader() {
             {videos.map((v) => (
               <Card key={v.id} className="p-3 rounded-2xl flex items-center gap-3 hover-lift">
                 <img
-                  src={`https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`}
+                  src={`https://i.ytimg.com/vi/${v.youtube_id}/mqdefault.jpg`}
                   alt={v.title}
                   className="w-24 h-14 object-cover rounded-lg flex-shrink-0"
                 />
@@ -165,9 +196,13 @@ function VideoUploader() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  onClick={() => {
-                    removeVideo(v.id);
-                    toast.success("Video removed.");
+                  onClick={async () => {
+                    try {
+                      await removeVideo(v.id);
+                      toast.success("Video removed.");
+                    } catch {
+                      toast.error("Could not remove video.");
+                    }
                   }}
                   aria-label="Remove video"
                 >
@@ -182,13 +217,14 @@ function VideoUploader() {
   );
 }
 
-const MAX_FILE_BYTES = 4 * 1024 * 1024; // 4 MB safe for localStorage
+const MAX_FILE_BYTES = 500 * 1024 * 1024; // 500 MB matches the bucket limit
 
 function FileUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [busy, setBusy] = useState(false);
-  const files = useUploadedFiles();
+  const [progress, setProgress] = useState<{ name: string; pct: number } | null>(null);
+  const { files } = useUploadedFiles();
 
   const handleFiles = async (list: FileList | null) => {
     if (!list || list.length === 0) return;
@@ -196,17 +232,21 @@ function FileUploader() {
     try {
       for (const file of Array.from(list)) {
         if (file.size > MAX_FILE_BYTES) {
-          toast.error(`${file.name} is too large (max 4 MB in browser storage).`);
+          toast.error(`${file.name} is too large (max 500 MB).`);
           continue;
         }
-        const dataUrl = await fileToDataUrl(file);
-        addFile({ name: file.name, type: file.type || "application/octet-stream", size: file.size, dataUrl });
-        toast.success(`${file.name} uploaded.`);
+        setProgress({ name: file.name, pct: 5 });
+        try {
+          await uploadFile(file, (pct) => setProgress({ name: file.name, pct }));
+          toast.success(`${file.name} uploaded.`);
+        } catch (err: unknown) {
+          const msg = err instanceof Error ? err.message : "Upload failed.";
+          toast.error(`${file.name}: ${msg}`);
+        }
       }
-    } catch {
-      toast.error("Something went wrong while reading the file.");
     } finally {
       setBusy(false);
+      setProgress(null);
       if (inputRef.current) inputRef.current.value = "";
     }
   };
@@ -234,13 +274,14 @@ function FileUploader() {
           </div>
           <h2 className="font-display font-bold text-2xl mb-1">Drop files here</h2>
           <p className="text-sm text-muted-foreground mb-6">
-            Or click below to browse. PDFs, images, docs, short videos — up to 4 MB each.
+            Videos, PDFs, Word, PowerPoint, images — up to 500 MB each.
           </p>
           <input
             ref={inputRef}
             type="file"
             multiple
             className="hidden"
+            accept="video/*,image/*,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv,.zip"
             onChange={(e) => handleFiles(e.target.files)}
           />
           <Button
@@ -252,8 +293,18 @@ function FileUploader() {
           >
             <FileUp className="w-4 h-4" /> {busy ? "Uploading…" : "Choose files"}
           </Button>
+
+          {progress && (
+            <div className="mt-6 text-left">
+              <p className="text-xs text-muted-foreground mb-1.5 truncate">
+                Uploading <span className="font-semibold text-foreground">{progress.name}</span>
+              </p>
+              <Progress value={progress.pct} className="h-2" />
+            </div>
+          )}
+
           <p className="mt-4 text-xs text-muted-foreground inline-flex items-center gap-1.5 justify-center">
-            <CheckCircle2 className="w-3.5 h-3.5 text-primary" /> Stored privately in your browser
+            <CheckCircle2 className="w-3.5 h-3.5 text-primary" /> Stored in cloud — visible to everyone
           </p>
         </div>
       </Card>
@@ -268,7 +319,7 @@ function FileUploader() {
             <p className="text-muted-foreground text-sm">No files uploaded yet.</p>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 max-h-[32rem] overflow-y-auto pr-1">
             {files.map((f) => (
               <Card key={f.id} className="p-3 rounded-2xl flex items-center gap-3 hover-lift">
                 <div className="w-12 h-12 rounded-xl bg-secondary grid place-items-center text-primary flex-shrink-0">
@@ -276,8 +327,9 @@ function FileUploader() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <a
-                    href={f.dataUrl}
-                    download={f.name}
+                    href={f.public_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="font-semibold text-sm truncate hover:text-primary block"
                   >
                     {f.name}
@@ -287,9 +339,23 @@ function FileUploader() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  onClick={() => {
-                    removeFile(f.id);
-                    toast.success("File removed.");
+                  asChild
+                  aria-label="Open file"
+                >
+                  <a href={f.public_url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={async () => {
+                    try {
+                      await removeFile(f);
+                      toast.success("File removed.");
+                    } catch {
+                      toast.error("Could not remove file.");
+                    }
                   }}
                   aria-label="Remove file"
                 >
