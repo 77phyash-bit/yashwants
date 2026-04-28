@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +20,8 @@ import {
   File as FileIcon,
   Cloud,
   ExternalLink,
+  Lock,
+  LogOut,
 } from "lucide-react";
 import {
   addVideo,
@@ -29,6 +33,7 @@ import {
   useUploadedFiles,
   useUploadedVideos,
 } from "@/lib/content-store";
+import { useAuth, signOut } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/upload")({
   head: () => ({
@@ -42,6 +47,62 @@ export const Route = createFileRoute("/upload")({
 
 function UploadPage() {
   const [tab, setTab] = useState<"video" | "file">("video");
+  const { user, isAdmin, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate({ to: "/auth" });
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <SiteLayout>
+        <div className="mx-auto max-w-md px-5 py-24 text-center text-muted-foreground">Loading…</div>
+      </SiteLayout>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  if (!isAdmin) {
+    return (
+      <SiteLayout>
+        <section className="mx-auto max-w-md px-5 lg:px-8 py-20 text-center">
+          <span className="inline-grid place-items-center w-14 h-14 rounded-2xl bg-secondary text-primary mx-auto mb-4">
+            <Lock className="w-6 h-6" />
+          </span>
+          <h1 className="font-display font-black text-3xl mb-2">Admin only</h1>
+          <p className="text-muted-foreground mb-6">
+            You're signed in as <strong>{user.email}</strong>, but this account doesn't have admin access yet.
+            Add an <code>admin</code> role to your user in the backend, then refresh.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Link
+              to="/"
+              className="px-5 py-2.5 rounded-full bg-card border border-border font-semibold text-sm hover:bg-secondary"
+            >
+              Go home
+            </Link>
+            <Button
+              onClick={async () => {
+                await signOut();
+                toast.success("Signed out.");
+                navigate({ to: "/auth" });
+              }}
+              variant="outline"
+              className="rounded-full"
+            >
+              <LogOut className="w-4 h-4" /> Sign out
+            </Button>
+          </div>
+        </section>
+      </SiteLayout>
+    );
+  }
 
   return (
     <SiteLayout>
@@ -58,9 +119,23 @@ function UploadPage() {
           <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
             Paste a YouTube link or drop videos, PDFs, documents and images — they appear on your site instantly.
           </p>
-          <p className="mt-3 text-xs text-muted-foreground inline-flex items-center gap-1.5 justify-center">
-            <Cloud className="w-3.5 h-3.5 text-primary" /> Stored in cloud · up to 500&nbsp;MB per file · shareable links
-          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
+            <span className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
+              <Cloud className="w-3.5 h-3.5 text-primary" /> Stored in cloud · up to 500&nbsp;MB per file
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-full h-8"
+              onClick={async () => {
+                await signOut();
+                toast.success("Signed out.");
+                navigate({ to: "/" });
+              }}
+            >
+              <LogOut className="w-3.5 h-3.5" /> Sign out
+            </Button>
+          </div>
         </div>
       </section>
 
