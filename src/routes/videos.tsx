@@ -20,9 +20,12 @@ export const Route = createFileRoute("/videos")({
 });
 
 function VideosPage() {
-  const uploaded = useUploadedVideos();
-  const files = useUploadedFiles();
-  const allVideos = [...uploaded.map((v) => ({ id: v.id, title: v.title, tag: v.tag })), ...sampleVideos];
+  const { videos: uploaded } = useUploadedVideos();
+  const { files } = useUploadedFiles();
+  const allVideos = [
+    ...uploaded.map((v) => ({ id: v.youtube_id, title: v.title, tag: v.tag ?? undefined })),
+    ...sampleVideos,
+  ];
   return (
     <SiteLayout>
       <section className="relative overflow-hidden">
@@ -75,7 +78,12 @@ function VideosPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <a href={f.dataUrl} download={f.name} className="font-semibold text-sm truncate hover:text-primary block">
+                    <a
+                      href={f.public_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-sm truncate hover:text-primary block"
+                    >
                       {f.name}
                     </a>
                     <p className="text-xs text-muted-foreground">{formatBytes(f.size)}</p>
