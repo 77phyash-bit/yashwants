@@ -56,12 +56,14 @@ function Index() {
               >
                 Start Learning <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                to="/videos"
+              <a
+                href="https://www.youtube.com/@brightminds-y77"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-card border border-border font-semibold hover:bg-secondary transition-colors"
               >
-                <Youtube className="w-4 h-4 text-primary" /> Watch Videos
-              </Link>
+                <Youtube className="w-4 h-4 text-primary" /> Watch on YouTube
+              </a>
             </div>
 
             <div className="mt-10 flex items-center gap-8">
