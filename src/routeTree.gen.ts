@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VideosRouteImport } from './routes/videos'
+import { Route as UploadRouteImport } from './routes/upload'
 import { Route as LearningRouteImport } from './routes/learning'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const VideosRoute = VideosRouteImport.update({
   id: '/videos',
   path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearningRoute = LearningRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/learning': typeof LearningRoute
+  '/upload': typeof UploadRoute
   '/videos': typeof VideosRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/learning': typeof LearningRoute
+  '/upload': typeof UploadRoute
   '/videos': typeof VideosRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,22 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/learning': typeof LearningRoute
+  '/upload': typeof UploadRoute
   '/videos': typeof VideosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/contact' | '/learning' | '/videos'
+  fullPaths: '/' | '/about' | '/contact' | '/learning' | '/upload' | '/videos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/contact' | '/learning' | '/videos'
-  id: '__root__' | '/' | '/about' | '/contact' | '/learning' | '/videos'
+  to: '/' | '/about' | '/contact' | '/learning' | '/upload' | '/videos'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/learning'
+    | '/upload'
+    | '/videos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +92,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   LearningRoute: typeof LearningRoute
+  UploadRoute: typeof UploadRoute
   VideosRoute: typeof VideosRoute
 }
 
@@ -86,6 +103,13 @@ declare module '@tanstack/react-router' {
       path: '/videos'
       fullPath: '/videos'
       preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learning': {
@@ -124,6 +148,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   LearningRoute: LearningRoute,
+  UploadRoute: UploadRoute,
   VideosRoute: VideosRoute,
 }
 export const routeTree = rootRouteImport
