@@ -20,6 +20,12 @@ export function SocialRow({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={label}
+          onClick={(e) => {
+            if (href.startsWith("http")) {
+              e.preventDefault();
+              window.open(href, "_blank", "noopener,noreferrer");
+            }
+          }}
           className={`${sz} grid place-items-center rounded-2xl bg-card border border-border text-foreground/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-pop hover:rotate-[-4deg] ${color}`}
         >
           <Icon className={ic} />
