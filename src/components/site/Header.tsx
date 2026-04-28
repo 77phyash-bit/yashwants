@@ -1,20 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, Lock } from "lucide-react";
 import { YouTubeButton } from "./YouTubeButton";
+import { useAuth } from "@/hooks/use-auth";
 
-const links = [
+const baseLinks = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About Us" },
   { to: "/learning", label: "Learning Content" },
   { to: "/videos", label: "Videos" },
-  { to: "/upload", label: "Upload" },
   { to: "/contact", label: "Contact Us" },
 ] as const;
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { isAdmin } = useAuth();
+  const links = isAdmin
+    ? ([...baseLinks, { to: "/upload" as const, label: "Upload" }] as const)
+    : baseLinks;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -52,6 +56,16 @@ export function Header() {
               {l.label}
             </Link>
           ))}
+          {!isAdmin && (
+            <Link
+              to="/auth"
+              className="px-3 py-2 text-sm font-medium text-foreground/60 hover:text-primary inline-flex items-center gap-1.5 rounded-full"
+              aria-label="Admin login"
+              title="Admin login"
+            >
+              <Lock className="w-3.5 h-3.5" />
+            </Link>
+          )}
           <YouTubeButton className="ml-3" size="sm" />
         </nav>
 
@@ -78,6 +92,15 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
+            {!isAdmin && (
+              <Link
+                to="/auth"
+                onClick={() => setOpen(false)}
+                className="px-4 py-3 rounded-xl font-medium text-foreground/70 hover:bg-secondary inline-flex items-center gap-2"
+              >
+                <Lock className="w-4 h-4" /> Admin login
+              </Link>
+            )}
             <div className="pt-2">
               <YouTubeButton className="w-full justify-center" size="md" />
             </div>
