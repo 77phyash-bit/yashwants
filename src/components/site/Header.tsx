@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X, Sparkles } from "lucide-react";
+import { YouTubeButton } from "./YouTubeButton";
 
 const links = [
   { to: "/", label: "Home" },
@@ -51,12 +52,7 @@ export function Header() {
               {l.label}
             </Link>
           ))}
-          <Link
-            to="/learning"
-            className="ml-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-full gradient-warm text-primary-foreground font-semibold text-sm shadow-soft hover:scale-105 transition-transform"
-          >
-            Start Learning
-          </Link>
+          <YouTubeButton className="ml-3" size="sm" />
         </nav>
 
         <button
@@ -82,6 +78,9 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
+            <div className="pt-2">
+              <YouTubeButton className="w-full justify-center" size="md" />
+            </div>
           </div>
         </div>
       )}

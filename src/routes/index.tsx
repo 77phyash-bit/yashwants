@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, FileText, GraduationCap, Sparkles, Star, Users, Youtube } from "lucide-react";
+import { ArrowRight, BookOpen, FileText, GraduationCap, Sparkles, Star, Users } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { SocialRow } from "@/components/site/Footer";
 import { VideoCard, sampleVideos } from "@/components/site/VideoCard";
+import { YouTubeButton } from "@/components/site/YouTubeButton";
 import heroImg from "@/assets/yashwant-profile.jpg";
 
 export const Route = createFileRoute("/")({
@@ -56,18 +57,7 @@ function Index() {
               >
                 Start Learning <ArrowRight className="w-4 h-4" />
               </Link>
-              <a
-                href="https://www.youtube.com/@brightminds-y77"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.open("https://www.youtube.com/@brightminds-y77", "_blank", "noopener,noreferrer");
-                }}
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-card border border-border font-semibold hover:bg-secondary transition-colors"
-              >
-                <Youtube className="w-4 h-4 text-primary" /> Watch on YouTube
-              </a>
+              <YouTubeButton size="lg" variant="outline" label="Watch @brightminds-y77" />
             </div>
 
             <div className="mt-10 flex items-center gap-8">

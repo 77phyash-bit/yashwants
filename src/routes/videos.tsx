@@ -5,6 +5,7 @@ import { Youtube, Upload, FileText, Image as ImageIcon, Video as VideoIcon, File
 import { Link } from "@tanstack/react-router";
 import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-store";
 import { Card } from "@/components/ui/card";
+import { YouTubeButton } from "@/components/site/YouTubeButton";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
@@ -37,12 +38,15 @@ function VideosPage() {
           <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
             Browse the full collection — from quick concept refreshers to deep-dive walkthroughs.
           </p>
-          <Link
-            to="/upload"
-            className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full gradient-warm text-primary-foreground font-semibold text-sm shadow-soft hover:scale-105 transition-transform"
-          >
-            <Upload className="w-4 h-4" /> Upload a video
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3 justify-center">
+            <YouTubeButton size="md" label="Visit @brightminds-y77" />
+            <Link
+              to="/upload"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-card border border-border font-semibold text-sm hover:bg-secondary transition-colors"
+            >
+              <Upload className="w-4 h-4" /> Upload a video
+            </Link>
+          </div>
         </div>
       </section>
 

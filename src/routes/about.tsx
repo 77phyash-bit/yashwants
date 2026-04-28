@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { Award, Heart, Lightbulb, Target } from "lucide-react";
 import profileImg from "@/assets/yashwant-profile.jpg";
+import { YouTubeButton } from "@/components/site/YouTubeButton";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -65,6 +66,9 @@ function AboutPage() {
                 <div className="font-display font-black text-2xl gradient-text">50K+</div>
                 <div className="text-xs text-muted-foreground mt-1">Students reached</div>
               </div>
+            </div>
+            <div className="mt-8">
+              <YouTubeButton size="lg" label="Subscribe @brightminds-y77" />
             </div>
           </div>
         </div>
