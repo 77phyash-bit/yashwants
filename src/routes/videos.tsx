@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { VideoCard, sampleVideos } from "@/components/site/VideoCard";
-import { Youtube } from "lucide-react";
+import { Youtube, Upload, FileText, Image as ImageIcon, Video as VideoIcon, File as FileIcon } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-store";
+import { Card } from "@/components/ui/card";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
@@ -16,6 +19,9 @@ export const Route = createFileRoute("/videos")({
 });
 
 function VideosPage() {
+  const uploaded = useUploadedVideos();
+  const files = useUploadedFiles();
+  const allVideos = [...uploaded.map((v) => ({ id: v.id, title: v.title, tag: v.tag })), ...sampleVideos];
   return (
     <SiteLayout>
       <section className="relative overflow-hidden">
@@ -31,15 +37,50 @@ function VideosPage() {
           <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
             Browse the full collection — from quick concept refreshers to deep-dive walkthroughs.
           </p>
+          <Link
+            to="/upload"
+            className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full gradient-warm text-primary-foreground font-semibold text-sm shadow-soft hover:scale-105 transition-transform"
+          >
+            <Upload className="w-4 h-4" /> Upload a video
+          </Link>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-5 lg:px-8 pb-20">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sampleVideos.map((v) => (
+          {allVideos.map((v) => (
             <VideoCard key={v.id} video={v} />
           ))}
         </div>
+
+        {files.length > 0 && (
+          <div className="mt-16">
+            <h2 className="font-display font-bold text-3xl mb-6">Resources & Files</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {files.map((f) => (
+                <Card key={f.id} className="p-4 rounded-2xl flex items-center gap-3 hover-lift">
+                  <div className="w-12 h-12 rounded-xl bg-secondary grid place-items-center text-primary flex-shrink-0">
+                    {f.type.startsWith("image/") ? (
+                      <ImageIcon className="w-5 h-5" />
+                    ) : f.type.startsWith("video/") ? (
+                      <VideoIcon className="w-5 h-5" />
+                    ) : f.type.includes("pdf") || f.type.includes("text") || f.type.includes("document") ? (
+                      <FileText className="w-5 h-5" />
+                    ) : (
+                      <FileIcon className="w-5 h-5" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <a href={f.dataUrl} download={f.name} className="font-semibold text-sm truncate hover:text-primary block">
+                      {f.name}
+                    </a>
+                    <p className="text-xs text-muted-foreground">{formatBytes(f.size)}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
     </SiteLayout>
   );
