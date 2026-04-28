@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Facebook, Youtube, Instagram, Mail, Sparkles } from "lucide-react";
 
 export const socials = [
-  { href: "https://youtube.com", label: "YouTube", Icon: Youtube, color: "hover:bg-primary hover:text-primary-foreground" },
+  { href: "https://www.youtube.com/@brightminds-y77", label: "YouTube", Icon: Youtube, color: "hover:bg-primary hover:text-primary-foreground" },
   { href: "https://facebook.com", label: "Facebook", Icon: Facebook, color: "hover:bg-sky hover:text-primary-foreground" },
   { href: "https://instagram.com", label: "Instagram", Icon: Instagram, color: "hover:bg-berry hover:text-primary-foreground" },
   { href: "mailto:hello@yashwantsingh.com", label: "Email", Icon: Mail, color: "hover:bg-leaf hover:text-primary-foreground" },
