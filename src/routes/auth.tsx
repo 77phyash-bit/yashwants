@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -13,8 +12,8 @@ import { useAuth } from "@/hooks/use-auth";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Admin Login — Yashwant Singh" },
-      { name: "description", content: "Sign in to manage your portfolio uploads." },
+      { title: "Admin Login — Creator Dashboard" },
+      { name: "description", content: "Sign in to manage your dashboard." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -36,7 +35,7 @@ function AuthPage() {
 
   useEffect(() => {
     if (!loading && user && isAdmin) {
-      navigate({ to: "/upload" });
+      navigate({ to: "/" });
     }
   }, [user, isAdmin, loading, navigate]);
 
@@ -74,25 +73,28 @@ function AuthPage() {
   };
 
   return (
-    <SiteLayout>
-      <section className="mx-auto max-w-md px-5 lg:px-8 py-16">
+    <div className="min-h-screen bg-muted/40 flex items-center justify-center px-4 py-12">
+      <section className="w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="inline-grid place-items-center w-14 h-14 rounded-2xl gradient-warm text-primary-foreground mx-auto mb-4 shadow-pop">
+          <span className="inline-grid place-items-center w-14 h-14 rounded-2xl bg-primary text-primary-foreground mx-auto mb-4 shadow-md">
             <Lock className="w-6 h-6" />
           </span>
-          <h1 className="font-display font-black text-3xl md:text-4xl">Admin Access</h1>
+          <h1 className="font-display font-bold text-3xl">Admin Access</h1>
           <p className="text-muted-foreground mt-2 text-sm">
-            Sign in to upload videos, documents and files.
+            Sign in to manage videos, documents and blog posts.
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            The first account to sign up automatically becomes admin.
           </p>
         </div>
 
-        <Card className="p-6 lg:p-8 rounded-3xl border-2">
-          <div className="inline-flex p-1 rounded-full bg-secondary mb-6 w-full">
+        <Card className="p-6 lg:p-8 rounded-xl border">
+          <div className="inline-flex p-1 rounded-lg bg-secondary mb-6 w-full">
             <button
               type="button"
               onClick={() => setMode("signin")}
-              className={`flex-1 px-4 py-2 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 transition-all ${
-                mode === "signin" ? "bg-background shadow-soft text-primary" : "text-foreground/70"
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-semibold inline-flex items-center justify-center gap-2 transition-all ${
+                mode === "signin" ? "bg-background shadow-sm text-primary" : "text-foreground/70"
               }`}
             >
               <LogIn className="w-4 h-4" /> Sign in
@@ -100,8 +102,8 @@ function AuthPage() {
             <button
               type="button"
               onClick={() => setMode("signup")}
-              className={`flex-1 px-4 py-2 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 transition-all ${
-                mode === "signup" ? "bg-background shadow-soft text-primary" : "text-foreground/70"
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-semibold inline-flex items-center justify-center gap-2 transition-all ${
+                mode === "signup" ? "bg-background shadow-sm text-primary" : "text-foreground/70"
               }`}
             >
               <UserPlus className="w-4 h-4" /> Sign up
@@ -134,34 +136,28 @@ function AuthPage() {
                 maxLength={72}
               />
             </div>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={busy}
-              className="w-full gradient-warm text-primary-foreground border-0 hover:opacity-90"
-            >
+            <Button type="submit" size="lg" disabled={busy} className="w-full">
               {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
             </Button>
           </form>
 
           {user && !isAdmin && !loading && (
-            <div className="mt-6 p-4 rounded-2xl bg-secondary text-sm">
+            <div className="mt-6 p-4 rounded-lg bg-secondary text-sm">
               <div className="flex items-center gap-2 font-semibold mb-1">
                 <ShieldCheck className="w-4 h-4 text-primary" /> Signed in as {user.email}
               </div>
               <p className="text-muted-foreground">
-                Your account is not an admin yet. Open the backend dashboard, go to{" "}
-                <strong>Database → user_roles</strong>, and add a row with your <code>user_id</code>{" "}
-                and role <code>admin</code>.
+                Your account is not an admin. The first signup automatically becomes admin —
+                if other accounts already exist, ask the owner to grant you access.
               </p>
             </div>
           )}
 
           <p className="mt-6 text-xs text-muted-foreground text-center">
-            Just visiting? <Link to="/" className="text-primary font-semibold hover:underline">Back to home</Link>
+            <Link to="/" className="text-primary font-semibold hover:underline">Back to dashboard</Link>
           </p>
         </Card>
       </section>
-    </SiteLayout>
+    </div>
   );
 }

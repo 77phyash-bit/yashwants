@@ -1,99 +1,99 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { SiteLayout } from "@/components/site/Layout";
-import { VideoCard, sampleVideos } from "@/components/site/VideoCard";
-import { Youtube, Upload, FileText, Image as ImageIcon, Video as VideoIcon, File as FileIcon } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-store";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
-import { YouTubeButton } from "@/components/site/YouTubeButton";
+import { Button } from "@/components/ui/button";
+import { Video, Upload, Play, X } from "lucide-react";
+import { useUploadedVideos } from "@/lib/content-store";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
     meta: [
-      { title: "Videos — Yashwant Singh" },
-      { name: "description", content: "Watch educational videos covering math, science, English and more." },
-      { property: "og:title", content: "Videos — Yashwant Singh" },
-      { property: "og:description", content: "Bite-sized lessons that make tough ideas easy." },
+      { title: "Videos — Creator Dashboard" },
+      { name: "description", content: "Browse uploaded videos." },
     ],
   }),
   component: VideosPage,
 });
 
 function VideosPage() {
-  const { videos: uploaded } = useUploadedVideos();
-  const { files } = useUploadedFiles();
-  const allVideos = [
-    ...uploaded.map((v) => ({ id: v.youtube_id, title: v.title, tag: v.tag ?? undefined })),
-    ...sampleVideos,
-  ];
-  return (
-    <SiteLayout>
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid opacity-50" />
-        <div className="absolute -top-32 -left-32 w-[30rem] h-[30rem] rounded-full bg-primary opacity-15 blur-3xl" />
-        <div className="relative mx-auto max-w-7xl px-5 lg:px-8 pt-16 pb-12 text-center">
-          <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-wider">
-            <Youtube className="w-4 h-4" /> Video Library
-          </span>
-          <h1 className="font-display font-black text-5xl md:text-6xl mt-3">
-            Lessons that <span className="gradient-text">click instantly</span>.
-          </h1>
-          <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Browse the full collection — from quick concept refreshers to deep-dive walkthroughs.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3 justify-center">
-            <YouTubeButton size="md" label="Visit @brightminds-y77" />
-            <Link
-              to="/upload"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-card border border-border font-semibold text-sm hover:bg-secondary transition-colors"
-            >
-              <Upload className="w-4 h-4" /> Upload a video
-            </Link>
-          </div>
-        </div>
-      </section>
+  const { videos, loading } = useUploadedVideos();
+  const { isAdmin } = useAuth();
+  const [active, setActive] = useState<string | null>(null);
 
-      <section className="mx-auto max-w-7xl px-5 lg:px-8 pb-20">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allVideos.map((v) => (
-            <VideoCard key={v.id} video={v} />
+  const action = isAdmin ? (
+    <Button asChild size="sm">
+      <Link to="/upload"><Upload className="w-4 h-4" /> Upload Video</Link>
+    </Button>
+  ) : null;
+
+  return (
+    <DashboardLayout title="Videos" subtitle={`${videos.length} video${videos.length === 1 ? "" : "s"}`} action={action}>
+      {loading ? (
+        <p className="text-muted-foreground text-sm">Loading…</p>
+      ) : videos.length === 0 ? (
+        <Card className="p-12 text-center rounded-xl border-dashed border-2">
+          <Video className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="font-semibold mb-1">No videos yet</p>
+          <p className="text-sm text-muted-foreground">
+            {isAdmin ? "Upload your first video to get started." : "Check back soon."}
+          </p>
+        </Card>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {videos.map((v) => (
+            <Card key={v.id} className="overflow-hidden rounded-xl hover:shadow-md transition-shadow">
+              <button
+                onClick={() => setActive(v.youtube_id)}
+                className="relative block w-full aspect-video bg-muted group"
+              >
+                <img
+                  src={`https://i.ytimg.com/vi/${v.youtube_id}/hqdefault.jpg`}
+                  alt={v.title}
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute inset-0 grid place-items-center bg-foreground/30 group-hover:bg-foreground/50 transition-colors">
+                  <span className="grid place-items-center w-12 h-12 rounded-full bg-white/95 text-primary shadow-md">
+                    <Play className="w-5 h-5 ml-0.5" fill="currentColor" />
+                  </span>
+                </span>
+              </button>
+              <div className="p-4">
+                <p className="font-semibold text-sm line-clamp-2">{v.title}</p>
+                {v.tag && <p className="text-xs text-primary mt-1">{v.tag}</p>}
+                <p className="text-xs text-muted-foreground mt-1">
+                  {new Date(v.created_at).toLocaleDateString()}
+                </p>
+              </div>
+            </Card>
           ))}
         </div>
+      )}
 
-        {files.length > 0 && (
-          <div className="mt-16">
-            <h2 className="font-display font-bold text-3xl mb-6">Resources & Files</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {files.map((f) => (
-                <Card key={f.id} className="p-4 rounded-2xl flex items-center gap-3 hover-lift">
-                  <div className="w-12 h-12 rounded-xl bg-secondary grid place-items-center text-primary flex-shrink-0">
-                    {f.type.startsWith("image/") ? (
-                      <ImageIcon className="w-5 h-5" />
-                    ) : f.type.startsWith("video/") ? (
-                      <VideoIcon className="w-5 h-5" />
-                    ) : f.type.includes("pdf") || f.type.includes("text") || f.type.includes("document") ? (
-                      <FileText className="w-5 h-5" />
-                    ) : (
-                      <FileIcon className="w-5 h-5" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <a
-                      href={f.public_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold text-sm truncate hover:text-primary block"
-                    >
-                      {f.name}
-                    </a>
-                    <p className="text-xs text-muted-foreground">{formatBytes(f.size)}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
+      {active && (
+        <div
+          className="fixed inset-0 z-50 bg-foreground/70 grid place-items-center p-4"
+          onClick={() => setActive(null)}
+        >
+          <div className="relative w-full max-w-4xl aspect-video" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setActive(null)}
+              className="absolute -top-10 right-0 text-white/90 hover:text-white inline-flex items-center gap-1 text-sm"
+              aria-label="Close player"
+            >
+              <X className="w-5 h-5" /> Close
+            </button>
+            <iframe
+              src={`https://www.youtube.com/embed/${active}?autoplay=1`}
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full rounded-xl bg-black"
+            />
           </div>
-        )}
-      </section>
-    </SiteLayout>
+        </div>
+      )}
+    </DashboardLayout>
   );
 }

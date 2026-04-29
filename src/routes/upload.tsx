@@ -1,8 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { SiteLayout } from "@/components/site/Layout";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState, useRef, useEffect } from "react";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -21,7 +19,6 @@ import {
   Cloud,
   ExternalLink,
   Lock,
-  LogOut,
 } from "lucide-react";
 import {
   addVideo,
@@ -33,13 +30,13 @@ import {
   useUploadedFiles,
   useUploadedVideos,
 } from "@/lib/content-store";
-import { useAuth, signOut } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/upload")({
   head: () => ({
     meta: [
-      { title: "Upload — Yashwant Singh" },
-      { name: "description", content: "Upload videos, documents and resources to your portfolio." },
+      { title: "Upload — Creator Dashboard" },
+      { name: "description", content: "Upload videos and documents." },
     ],
   }),
   component: UploadPage,
@@ -58,110 +55,65 @@ function UploadPage() {
 
   if (loading) {
     return (
-      <SiteLayout>
-        <div className="mx-auto max-w-md px-5 py-24 text-center text-muted-foreground">Loading…</div>
-      </SiteLayout>
+      <DashboardLayout title="Upload Center">
+        <div className="text-center text-muted-foreground py-24">Loading…</div>
+      </DashboardLayout>
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   if (!isAdmin) {
     return (
-      <SiteLayout>
-        <section className="mx-auto max-w-md px-5 lg:px-8 py-20 text-center">
+      <DashboardLayout title="Upload Center">
+        <Card className="p-10 max-w-md mx-auto text-center rounded-xl">
           <span className="inline-grid place-items-center w-14 h-14 rounded-2xl bg-secondary text-primary mx-auto mb-4">
             <Lock className="w-6 h-6" />
           </span>
-          <h1 className="font-display font-black text-3xl mb-2">Admin only</h1>
-          <p className="text-muted-foreground mb-6">
-            You're signed in as <strong>{user.email}</strong>, but this account doesn't have admin access yet.
-            Add an <code>admin</code> role to your user in the backend, then refresh.
+          <h2 className="font-display font-bold text-2xl mb-2">Admin only</h2>
+          <p className="text-sm text-muted-foreground mb-5">
+            You're signed in as <strong>{user.email}</strong>, but this account isn't an admin.
           </p>
-          <div className="flex gap-3 justify-center">
-            <Link
-              to="/"
-              className="px-5 py-2.5 rounded-full bg-card border border-border font-semibold text-sm hover:bg-secondary"
-            >
-              Go home
-            </Link>
-            <Button
-              onClick={async () => {
-                await signOut();
-                toast.success("Signed out.");
-                navigate({ to: "/auth" });
-              }}
-              variant="outline"
-              className="rounded-full"
-            >
-              <LogOut className="w-4 h-4" /> Sign out
-            </Button>
-          </div>
-        </section>
-      </SiteLayout>
+          <Link to="/" className="text-sm text-primary font-semibold hover:underline">
+            Back to dashboard
+          </Link>
+        </Card>
+      </DashboardLayout>
     );
   }
 
   return (
-    <SiteLayout>
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid opacity-50" />
-        <div className="absolute -top-32 -right-32 w-[30rem] h-[30rem] rounded-full bg-primary opacity-15 blur-3xl" />
-        <div className="relative mx-auto max-w-5xl px-5 lg:px-8 pt-16 pb-10 text-center">
-          <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-wider">
-            <Upload className="w-4 h-4" /> Upload Center
-          </span>
-          <h1 className="font-display font-black text-4xl md:text-6xl mt-3">
-            Add your <span className="gradient-text">content</span> in seconds.
-          </h1>
-          <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Paste a YouTube link or drop videos, PDFs, documents and images — they appear on your site instantly.
-          </p>
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
-            <span className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
-              <Cloud className="w-3.5 h-3.5 text-primary" /> Stored in cloud · up to 500&nbsp;MB per file
-            </span>
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-full h-8"
-              onClick={async () => {
-                await signOut();
-                toast.success("Signed out.");
-                navigate({ to: "/" });
-              }}
-            >
-              <LogOut className="w-3.5 h-3.5" /> Sign out
-            </Button>
-          </div>
-        </div>
-      </section>
+    <DashboardLayout
+      title="Upload Center"
+      subtitle="Add videos, documents and resources"
+    >
+      <div className="mb-6 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <Cloud className="w-3.5 h-3.5 text-primary" /> Stored in cloud · up to 500&nbsp;MB per file
+        </span>
+      </div>
 
-      <section className="mx-auto max-w-5xl px-5 lg:px-8 pb-20">
-        <div className="inline-flex p-1 rounded-full bg-secondary mb-8">
-          <button
-            onClick={() => setTab("video")}
-            className={`px-5 py-2.5 rounded-full text-sm font-semibold inline-flex items-center gap-2 transition-all ${
-              tab === "video" ? "bg-background shadow-soft text-primary" : "text-foreground/70"
-            }`}
-          >
-            <Youtube className="w-4 h-4" /> YouTube Video
-          </button>
-          <button
-            onClick={() => setTab("file")}
-            className={`px-5 py-2.5 rounded-full text-sm font-semibold inline-flex items-center gap-2 transition-all ${
-              tab === "file" ? "bg-background shadow-soft text-primary" : "text-foreground/70"
-            }`}
-          >
-            <FileUp className="w-4 h-4" /> Files, Docs & Videos
-          </button>
-        </div>
+      <div className="inline-flex p-1 rounded-lg bg-secondary mb-6">
+        <button
+          onClick={() => setTab("video")}
+          className={`px-4 py-2 rounded-md text-sm font-semibold inline-flex items-center gap-2 transition-all ${
+            tab === "video" ? "bg-background shadow-sm text-primary" : "text-foreground/70"
+          }`}
+        >
+          <Youtube className="w-4 h-4" /> YouTube Video
+        </button>
+        <button
+          onClick={() => setTab("file")}
+          className={`px-4 py-2 rounded-md text-sm font-semibold inline-flex items-center gap-2 transition-all ${
+            tab === "file" ? "bg-background shadow-sm text-primary" : "text-foreground/70"
+          }`}
+        >
+          <FileUp className="w-4 h-4" /> Files & Documents
+        </button>
+      </div>
 
-        {tab === "video" ? <VideoUploader /> : <FileUploader />}
-      </section>
-    </SiteLayout>
+      {tab === "video" ? <VideoUploader /> : <FileUploader />}
+    </DashboardLayout>
   );
 }
 
@@ -186,7 +138,7 @@ function VideoUploader() {
     setSubmitting(true);
     try {
       await addVideo({ youtube_id: id, title: title.trim(), tag: tag.trim() || undefined });
-      toast.success("Video added! It now appears on the Videos page.");
+      toast.success("Video added!");
       setUrl("");
       setTitle("");
       setTag("");
@@ -199,88 +151,53 @@ function VideoUploader() {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
-      <Card className="p-6 lg:p-8 rounded-3xl border-2">
-        <h2 className="font-display font-bold text-2xl mb-1">Add a YouTube video</h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          Paste any YouTube URL — full link, short link, or just the video ID.
+    <div className="grid lg:grid-cols-2 gap-6">
+      <Card className="p-6 rounded-xl">
+        <h2 className="font-display font-bold text-xl mb-1">Add a YouTube video</h2>
+        <p className="text-sm text-muted-foreground mb-5">
+          Paste any YouTube URL — full link, short link, or video ID.
         </p>
         <form onSubmit={handleAdd} className="space-y-4">
           <div>
             <label className="text-sm font-semibold mb-1.5 block">YouTube link</label>
-            <Input
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://youtube.com/watch?v=..."
-              className="h-11"
-            />
+            <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-11" />
           </div>
           <div>
             <label className="text-sm font-semibold mb-1.5 block">Title</label>
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Mastering Algebra in 10 minutes"
-              className="h-11"
-              maxLength={200}
-            />
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Video title" className="h-11" maxLength={200} />
           </div>
           <div>
             <label className="text-sm font-semibold mb-1.5 block">Tag (optional)</label>
-            <Input
-              value={tag}
-              onChange={(e) => setTag(e.target.value)}
-              placeholder="Math, Science, English…"
-              className="h-11"
-              maxLength={40}
-            />
+            <Input value={tag} onChange={(e) => setTag(e.target.value)} placeholder="e.g. Tutorial" className="h-11" maxLength={40} />
           </div>
-          <Button
-            type="submit"
-            size="lg"
-            disabled={submitting}
-            className="w-full gradient-warm text-primary-foreground border-0 hover:opacity-90"
-          >
+          <Button type="submit" size="lg" disabled={submitting} className="w-full">
             <Youtube className="w-4 h-4" /> {submitting ? "Adding…" : "Add to Videos"}
           </Button>
         </form>
       </Card>
 
       <div>
-        <h3 className="font-display font-bold text-xl mb-4">
-          Your videos <span className="text-muted-foreground text-base font-normal">({videos.length})</span>
+        <h3 className="font-display font-bold text-lg mb-3">
+          Your videos <span className="text-muted-foreground text-sm font-normal">({videos.length})</span>
         </h3>
         {videos.length === 0 ? (
-          <Card className="p-8 text-center rounded-3xl border-dashed border-2">
+          <Card className="p-8 text-center rounded-xl border-dashed border-2">
             <Youtube className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground text-sm">No videos yet. Add your first one!</p>
+            <p className="text-muted-foreground text-sm">No videos yet.</p>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 max-h-[28rem] overflow-y-auto pr-1">
             {videos.map((v) => (
-              <Card key={v.id} className="p-3 rounded-2xl flex items-center gap-3 hover-lift">
-                <img
-                  src={`https://i.ytimg.com/vi/${v.youtube_id}/mqdefault.jpg`}
-                  alt={v.title}
-                  className="w-24 h-14 object-cover rounded-lg flex-shrink-0"
-                />
+              <Card key={v.id} className="p-3 rounded-lg flex items-center gap-3">
+                <img src={`https://i.ytimg.com/vi/${v.youtube_id}/mqdefault.jpg`} alt={v.title} className="w-20 h-12 object-cover rounded-md flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate">{v.title}</p>
+                  <p className="font-medium text-sm truncate">{v.title}</p>
                   {v.tag && <p className="text-xs text-primary">{v.tag}</p>}
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={async () => {
-                    try {
-                      await removeVideo(v.id);
-                      toast.success("Video removed.");
-                    } catch {
-                      toast.error("Could not remove video.");
-                    }
-                  }}
-                  aria-label="Remove video"
-                >
+                <Button size="icon" variant="ghost" onClick={async () => {
+                  try { await removeVideo(v.id); toast.success("Removed."); }
+                  catch { toast.error("Could not remove."); }
+                }} aria-label="Remove video">
                   <Trash2 className="w-4 h-4 text-destructive" />
                 </Button>
               </Card>
@@ -292,7 +209,7 @@ function VideoUploader() {
   );
 }
 
-const MAX_FILE_BYTES = 500 * 1024 * 1024; // 500 MB matches the bucket limit
+const MAX_FILE_BYTES = 500 * 1024 * 1024;
 
 function FileUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -327,28 +244,19 @@ function FileUploader() {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
+    <div className="grid lg:grid-cols-2 gap-6">
       <Card
-        className={`p-8 rounded-3xl border-2 border-dashed transition-all ${
-          dragOver ? "border-primary bg-primary/5" : "border-border"
-        }`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragOver(true);
-        }}
+        className={`p-8 rounded-xl border-2 border-dashed transition-all ${dragOver ? "border-primary bg-primary/5" : "border-border"}`}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragOver(false);
-          handleFiles(e.dataTransfer.files);
-        }}
+        onDrop={(e) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files); }}
       >
         <div className="text-center">
-          <div className="mx-auto w-16 h-16 rounded-2xl gradient-warm grid place-items-center text-primary-foreground mb-4 shadow-pop">
-            <Upload className="w-7 h-7" />
+          <div className="mx-auto w-14 h-14 rounded-xl bg-primary text-primary-foreground grid place-items-center mb-4 shadow-md">
+            <Upload className="w-6 h-6" />
           </div>
-          <h2 className="font-display font-bold text-2xl mb-1">Drop files here</h2>
-          <p className="text-sm text-muted-foreground mb-6">
+          <h2 className="font-display font-bold text-xl mb-1">Drop files here</h2>
+          <p className="text-sm text-muted-foreground mb-5">
             Videos, PDFs, Word, PowerPoint, images — up to 500 MB each.
           </p>
           <input
@@ -359,18 +267,12 @@ function FileUploader() {
             accept="video/*,image/*,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv,.zip"
             onChange={(e) => handleFiles(e.target.files)}
           />
-          <Button
-            type="button"
-            size="lg"
-            disabled={busy}
-            onClick={() => inputRef.current?.click()}
-            className="gradient-warm text-primary-foreground border-0 hover:opacity-90"
-          >
+          <Button type="button" size="lg" disabled={busy} onClick={() => inputRef.current?.click()}>
             <FileUp className="w-4 h-4" /> {busy ? "Uploading…" : "Choose files"}
           </Button>
 
           {progress && (
-            <div className="mt-6 text-left">
+            <div className="mt-5 text-left">
               <p className="text-xs text-muted-foreground mb-1.5 truncate">
                 Uploading <span className="font-semibold text-foreground">{progress.name}</span>
               </p>
@@ -379,61 +281,42 @@ function FileUploader() {
           )}
 
           <p className="mt-4 text-xs text-muted-foreground inline-flex items-center gap-1.5 justify-center">
-            <CheckCircle2 className="w-3.5 h-3.5 text-primary" /> Stored in cloud — visible to everyone
+            <CheckCircle2 className="w-3.5 h-3.5 text-primary" /> Stored in cloud
           </p>
         </div>
       </Card>
 
       <div>
-        <h3 className="font-display font-bold text-xl mb-4">
-          Your files <span className="text-muted-foreground text-base font-normal">({files.length})</span>
+        <h3 className="font-display font-bold text-lg mb-3">
+          Your files <span className="text-muted-foreground text-sm font-normal">({files.length})</span>
         </h3>
         {files.length === 0 ? (
-          <Card className="p-8 text-center rounded-3xl border-dashed border-2">
+          <Card className="p-8 text-center rounded-xl border-dashed border-2">
             <FileUp className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground text-sm">No files uploaded yet.</p>
           </Card>
         ) : (
-          <div className="space-y-3 max-h-[32rem] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[28rem] overflow-y-auto pr-1">
             {files.map((f) => (
-              <Card key={f.id} className="p-3 rounded-2xl flex items-center gap-3 hover-lift">
-                <div className="w-12 h-12 rounded-xl bg-secondary grid place-items-center text-primary flex-shrink-0">
+              <Card key={f.id} className="p-3 rounded-lg flex items-center gap-3">
+                <div className="w-11 h-11 rounded-lg bg-secondary grid place-items-center text-primary flex-shrink-0">
                   <FileTypeIcon type={f.type} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <a
-                    href={f.public_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-sm truncate hover:text-primary block"
-                  >
+                  <a href={f.public_url} target="_blank" rel="noopener noreferrer" className="font-medium text-sm truncate hover:text-primary block">
                     {f.name}
                   </a>
                   <p className="text-xs text-muted-foreground">{formatBytes(f.size)}</p>
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  asChild
-                  aria-label="Open file"
-                >
+                <Button size="icon" variant="ghost" asChild aria-label="Open file">
                   <a href={f.public_url} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={async () => {
-                    try {
-                      await removeFile(f);
-                      toast.success("File removed.");
-                    } catch {
-                      toast.error("Could not remove file.");
-                    }
-                  }}
-                  aria-label="Remove file"
-                >
+                <Button size="icon" variant="ghost" onClick={async () => {
+                  try { await removeFile(f); toast.success("Removed."); }
+                  catch { toast.error("Could not remove."); }
+                }} aria-label="Remove file">
                   <Trash2 className="w-4 h-4 text-destructive" />
                 </Button>
               </Card>

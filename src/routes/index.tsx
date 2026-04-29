@@ -1,172 +1,137 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, FileText, GraduationCap, Sparkles, Star, Users } from "lucide-react";
-import { SiteLayout } from "@/components/site/Layout";
-import { SocialRow } from "@/components/site/Footer";
-import { VideoCard, sampleVideos } from "@/components/site/VideoCard";
-import { YouTubeButton } from "@/components/site/YouTubeButton";
-import heroImg from "@/assets/yashwant-profile.jpg";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { Card } from "@/components/ui/card";
+import { Video, FileText, BookOpen, ArrowRight, ExternalLink } from "lucide-react";
+import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-store";
+import { useBlogPosts } from "@/lib/blog-store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Yashwant Singh — Learning Made Joyful" },
-      { name: "description", content: "Educator and content creator helping students and parents with worksheets, videos and learning resources." },
-      { property: "og:title", content: "Yashwant Singh — Learning Made Joyful" },
-      { property: "og:description", content: "Worksheets, videos and resources for joyful learning." },
+      { title: "Dashboard — Creator Dashboard" },
+      { name: "description", content: "Overview of your videos, documents and blog posts." },
     ],
   }),
-  component: Index,
+  component: DashboardHome,
 });
 
-const learningTiles = [
-  { icon: FileText, title: "Worksheets", desc: "Printable practice sheets across subjects and grades.", color: "bg-sun/20 text-foreground", iconBg: "bg-sun" },
-  { icon: BookOpen, title: "Study Guides", desc: "Concept-by-concept walkthroughs that actually click.", color: "bg-sky/20 text-foreground", iconBg: "bg-sky" },
-  { icon: GraduationCap, title: "Parent Resources", desc: "Tips and toolkits to support learning at home.", color: "bg-leaf/20 text-foreground", iconBg: "bg-leaf" },
-  { icon: Star, title: "Activities", desc: "Hands-on tasks that turn lessons into adventures.", color: "bg-berry/15 text-foreground", iconBg: "bg-berry" },
-];
+function DashboardHome() {
+  const { videos } = useUploadedVideos();
+  const { files } = useUploadedFiles();
+  const { posts } = useBlogPosts();
 
-function Index() {
+  const stats = [
+    { label: "Total Videos", value: videos.length, icon: Video, to: "/videos", color: "bg-primary/10 text-primary" },
+    { label: "Total Documents", value: files.length, icon: FileText, to: "/content", color: "bg-accent text-accent-foreground" },
+    { label: "Total Blog Posts", value: posts.length, icon: BookOpen, to: "/blog", color: "bg-secondary text-secondary-foreground" },
+  ];
+
+  const recentVideos = videos.slice(0, 4);
+  const recentFiles = files.slice(0, 5);
+
   return (
-    <SiteLayout>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid opacity-60 pointer-events-none" />
-        <div className="absolute -top-40 -right-32 w-[40rem] h-[40rem] rounded-full gradient-warm opacity-20 blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-[30rem] h-[30rem] rounded-full bg-sky opacity-20 blur-3xl" />
+    <DashboardLayout title="Welcome back" subtitle="Here's what's happening with your content">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <Link key={s.label} to={s.to} className="block">
+              <Card className="p-5 rounded-xl border-border hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground font-medium">{s.label}</p>
+                    <p className="font-display font-bold text-3xl mt-1">{s.value}</p>
+                  </div>
+                  <span className={`grid place-items-center w-11 h-11 rounded-lg ${s.color}`}>
+                    <Icon className="w-5 h-5" />
+                  </span>
+                </div>
+                <p className="mt-3 text-xs text-primary font-medium inline-flex items-center gap-1">
+                  View all <ArrowRight className="w-3 h-3" />
+                </p>
+              </Card>
+            </Link>
+          );
+        })}
+      </div>
 
-        <div className="relative mx-auto max-w-7xl px-5 lg:px-8 pt-12 md:pt-20 pb-20 grid lg:grid-cols-2 gap-12 items-center">
-          <div className="animate-fade-in">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary text-secondary-foreground text-xs font-semibold mb-6">
-              <Sparkles className="w-3.5 h-3.5" /> Educator · Content Creator
-            </span>
-            <h1 className="font-display font-black text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
-              Learning,{" "}
-              <span className="gradient-text">made joyful</span>{" "}
-              for every curious mind.
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-              Hi, I'm <strong className="text-foreground">Yashwant Singh</strong> — I create
-              videos, worksheets and resources that make tough concepts feel simple,
-              for students and parents alike.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link
-                to="/learning"
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-full gradient-warm text-primary-foreground font-semibold shadow-pop hover:scale-105 transition-transform"
-              >
-                Start Learning <ArrowRight className="w-4 h-4" />
-              </Link>
-              <YouTubeButton size="lg" variant="outline" label="Watch @brightminds-y77" />
+      <div className="mt-8 grid lg:grid-cols-2 gap-5">
+        <Card className="p-5 rounded-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold text-lg">Recent Videos</h2>
+            <Link to="/videos" className="text-xs text-primary font-medium inline-flex items-center gap-1 hover:underline">
+              View all <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          {recentVideos.length === 0 ? (
+            <EmptyState icon={Video} text="No videos yet." />
+          ) : (
+            <div className="space-y-3">
+              {recentVideos.map((v) => (
+                <a
+                  key={v.id}
+                  href={`https://www.youtube.com/watch?v=${v.youtube_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-2 -m-2 rounded-lg hover:bg-secondary transition-colors"
+                >
+                  <img
+                    src={`https://i.ytimg.com/vi/${v.youtube_id}/mqdefault.jpg`}
+                    alt={v.title}
+                    className="w-20 h-12 object-cover rounded-md flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{v.title}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(v.created_at).toLocaleDateString()}</p>
+                  </div>
+                </a>
+              ))}
             </div>
+          )}
+        </Card>
 
-            <div className="mt-10 flex items-center gap-8">
-              <div>
-                <div className="font-display font-black text-3xl gradient-text">200+</div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Lessons</div>
-              </div>
-              <div className="w-px h-10 bg-border" />
-              <div>
-                <div className="font-display font-black text-3xl gradient-text">50K+</div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Learners</div>
-              </div>
-              <div className="w-px h-10 bg-border" />
-              <div>
-                <div className="font-display font-black text-3xl gradient-text">4.9★</div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Rated</div>
-              </div>
-            </div>
+        <Card className="p-5 rounded-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold text-lg">Recent Documents</h2>
+            <Link to="/content" className="text-xs text-primary font-medium inline-flex items-center gap-1 hover:underline">
+              View all <ArrowRight className="w-3 h-3" />
+            </Link>
           </div>
+          {recentFiles.length === 0 ? (
+            <EmptyState icon={FileText} text="No documents yet." />
+          ) : (
+            <div className="space-y-2">
+              {recentFiles.map((f) => (
+                <a
+                  key={f.id}
+                  href={f.public_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors"
+                >
+                  <span className="grid place-items-center w-9 h-9 rounded-lg bg-secondary text-primary flex-shrink-0">
+                    <FileText className="w-4 h-4" />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{f.name}</p>
+                    <p className="text-xs text-muted-foreground">{formatBytes(f.size)}</p>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                </a>
+              ))}
+            </div>
+          )}
+        </Card>
+      </div>
+    </DashboardLayout>
+  );
+}
 
-          <div className="relative animate-scale-in">
-            <div className="absolute -inset-6 gradient-warm rounded-[2.5rem] blur-2xl opacity-30" />
-            <div className="relative rounded-[2rem] overflow-hidden border border-border shadow-pop bg-card">
-              <img
-                src={heroImg}
-                alt="Yashwant Singh — educator"
-                width={1024}
-                height={1024}
-                className="w-full h-auto object-cover aspect-square"
-              />
-            </div>
-            <div className="absolute -bottom-6 -left-6 bg-card border border-border rounded-2xl shadow-soft px-4 py-3 flex items-center gap-3 animate-fade-in">
-              <span className="grid place-items-center w-10 h-10 rounded-xl bg-leaf text-primary-foreground"><Users className="w-5 h-5" /></span>
-              <div>
-                <div className="font-bold text-sm">Trusted by parents</div>
-                <div className="text-xs text-muted-foreground">across the country</div>
-              </div>
-            </div>
-            <div className="absolute -top-6 -right-4 bg-card border border-border rounded-2xl shadow-soft px-4 py-3 flex items-center gap-3 animate-fade-in">
-              <span className="grid place-items-center w-10 h-10 rounded-xl bg-berry text-primary-foreground"><Star className="w-5 h-5" fill="currentColor" /></span>
-              <div>
-                <div className="font-bold text-sm">Loved by kids</div>
-                <div className="text-xs text-muted-foreground">fun & easy lessons</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* YouTube Videos */}
-      <section className="mx-auto max-w-7xl px-5 lg:px-8 py-20">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
-          <div>
-            <span className="text-sm font-semibold text-primary uppercase tracking-wider">Watch & Learn</span>
-            <h2 className="font-display font-black text-4xl md:text-5xl mt-2">My YouTube Videos</h2>
-            <p className="text-muted-foreground mt-3 max-w-xl">Bite-sized lessons designed to make difficult ideas feel effortless.</p>
-          </div>
-          <Link to="/videos" className="inline-flex items-center gap-2 font-semibold text-primary hover:gap-3 transition-all">
-            Browse all <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sampleVideos.slice(0, 3).map((v) => (
-            <VideoCard key={v.id} video={v} />
-          ))}
-        </div>
-      </section>
-
-      {/* Learning Content */}
-      <section className="relative py-20">
-        <div className="absolute inset-0 bg-secondary/40" />
-        <div className="relative mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-sm font-semibold text-primary uppercase tracking-wider">Resources</span>
-            <h2 className="font-display font-black text-4xl md:text-5xl mt-2">Learning Content</h2>
-            <p className="text-muted-foreground mt-3">Carefully crafted materials for students and parents — explore, download and learn.</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {learningTiles.map(({ icon: Icon, title, desc, iconBg }) => (
-              <div key={title} className="group bg-card border border-border rounded-3xl p-6 hover-lift">
-                <span className={`grid place-items-center w-14 h-14 rounded-2xl ${iconBg} text-primary-foreground mb-5 group-hover:rotate-6 transition-transform`}>
-                  <Icon className="w-7 h-7" />
-                </span>
-                <h3 className="font-display font-bold text-xl mb-2">{title}</h3>
-                <p className="text-sm text-muted-foreground">{desc}</p>
-                <Link to="/learning" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary group-hover:gap-2 transition-all">
-                  Explore <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Social */}
-      <section className="mx-auto max-w-7xl px-5 lg:px-8 py-20">
-        <div className="relative overflow-hidden rounded-[2rem] gradient-warm p-10 md:p-16 text-center text-primary-foreground shadow-pop">
-          <div className="absolute inset-0 bg-grid opacity-20" />
-          <div className="relative">
-            <h2 className="font-display font-black text-4xl md:text-5xl">Let's stay connected</h2>
-            <p className="mt-4 text-primary-foreground/90 max-w-xl mx-auto">
-              Follow along on social media for daily learning tips, behind-the-scenes and free resources.
-            </p>
-            <div className="mt-8 flex justify-center">
-              <SocialRow size="lg" />
-            </div>
-          </div>
-        </div>
-      </section>
-    </SiteLayout>
+function EmptyState({ icon: Icon, text }: { icon: React.ComponentType<{ className?: string }>; text: string }) {
+  return (
+    <div className="text-center py-8 border-2 border-dashed border-border rounded-lg">
+      <Icon className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+      <p className="text-sm text-muted-foreground">{text}</p>
+    </div>
   );
 }
