@@ -23,13 +23,11 @@ export function useAuth(): AuthState {
         if (active) setIsAdmin(false);
         return;
       }
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", uid)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (active) setIsAdmin(!!data);
+      const { data, error } = await supabase.rpc("has_role", {
+        _user_id: uid,
+        _role: "admin",
+      });
+      if (active) setIsAdmin(!!data && !error);
     };
 
     // 1. Subscribe FIRST (avoid missing events)
