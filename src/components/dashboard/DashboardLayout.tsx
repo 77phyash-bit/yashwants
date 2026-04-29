@@ -1,9 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Video, FileText, BookOpen, Upload, LogOut, LogIn, Menu, Sparkles } from "lucide-react";
+import { LayoutDashboard, Video, FileText, BookOpen, Upload, LogOut, LogIn, Menu } from "lucide-react";
 import { useState } from "react";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import ownerAvatar from "@/assets/owner-avatar.webp";
 
 const nav = [
   { to: "/", label: "Home", icon: LayoutDashboard },
@@ -40,9 +41,11 @@ export function DashboardLayout({ children, title, subtitle, action }: {
         }`}
       >
         <div className="px-5 py-5 border-b border-border flex items-center gap-2">
-          <span className="grid place-items-center w-9 h-9 rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="w-4 h-4" />
-          </span>
+          <img
+            src={ownerAvatar}
+            alt="Owner"
+            className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/20"
+          />
           <div>
             <p className="font-display font-bold text-lg leading-tight">Creator</p>
             <p className="text-xs text-muted-foreground -mt-0.5">Dashboard</p>
