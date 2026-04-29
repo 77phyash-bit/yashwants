@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Video, FileText, BookOpen, ArrowRight, ExternalLink } from "lucide-react";
 import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-store";
 import { useBlogPosts } from "@/lib/blog-store";
+import { useAuth } from "@/hooks/use-auth";
+import ownerAvatar from "@/assets/owner-avatar.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,6 +21,7 @@ function DashboardHome() {
   const { videos } = useUploadedVideos();
   const { files } = useUploadedFiles();
   const { posts } = useBlogPosts();
+  const { isAdmin } = useAuth();
 
   const stats = [
     { label: "Total Videos", value: videos.length, icon: Video, to: "/videos", color: "bg-primary/10 text-primary" },
@@ -31,6 +34,32 @@ function DashboardHome() {
 
   return (
     <DashboardLayout title="Welcome back" subtitle="Here's what's happening with your content">
+      <Card className="p-5 md:p-6 rounded-xl mb-6 flex items-center gap-4 md:gap-5 bg-gradient-to-r from-primary/5 to-accent/30 border-primary/10">
+        <img
+          src={ownerAvatar}
+          alt="Owner"
+          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover ring-2 ring-primary/30 shadow-md flex-shrink-0"
+        />
+        <div className="min-w-0 flex-1">
+          <h2 className="font-display font-bold text-xl md:text-2xl truncate">
+            Hello, Creator
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {isAdmin
+              ? "You have full admin access — upload videos, documents and publish blog posts."
+              : "Browse the latest videos, documents and posts."}
+          </p>
+        </div>
+        {isAdmin && (
+          <Link
+            to="/upload"
+            className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors flex-shrink-0"
+          >
+            <ArrowRight className="w-4 h-4" /> Upload
+          </Link>
+        )}
+      </Card>
+
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
         {stats.map((s) => {
           const Icon = s.icon;
