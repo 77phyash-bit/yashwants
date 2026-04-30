@@ -39,7 +39,7 @@ function DashboardHome() {
         <img
           src={ownerAvatar}
           alt="Owner"
-          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover ring-2 ring-primary/30 shadow-md flex-shrink-0"
+          className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover ring-2 ring-primary/30 shadow-md flex-shrink-0"
         />
         <div className="min-w-0 flex-1">
           <h2 className="font-display font-bold text-xl md:text-2xl truncate">
