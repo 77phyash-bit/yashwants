@@ -69,7 +69,7 @@ function DashboardHome() {
           const Icon = s.icon;
           return (
             <Link key={s.label} to={s.to} className="block">
-              <Card className="p-5 rounded-xl border-border hover:shadow-md transition-shadow">
+              <Card className="p-5 rounded-xl border-border hover:shadow-md transition-shadow text-black">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">{s.label}</p>
