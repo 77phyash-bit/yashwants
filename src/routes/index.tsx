@@ -6,7 +6,7 @@ import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-
 import { useBlogPosts } from "@/lib/blog-store";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
-import ownerAvatar from "@/assets/owner-avatar.webp";
+import ownerAvatar from "@/assets/owner-avatar-hd.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
