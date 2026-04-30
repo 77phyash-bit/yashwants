@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Video, FileText, BookOpen, Upload, LogOut, LogIn, Menu } from "lucide-react";
+import { LayoutDashboard, Video, FileText, BookOpen, Upload, LogOut, LogIn, Menu, Youtube } from "lucide-react";
 import { useState } from "react";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ const nav = [
   { to: "/videos", label: "Videos", icon: Video },
   { to: "/content", label: "Content Writing", icon: FileText },
   { to: "/blog", label: "Blog", icon: BookOpen },
+  { to: "/upload", label: "Upload Center", icon: Upload },
 ];
 
 export function DashboardLayout({ children, title, subtitle, action }: {
@@ -73,20 +74,15 @@ export function DashboardLayout({ children, title, subtitle, action }: {
             );
           })}
 
-          {isAdmin && (
-            <Link
-              to="/upload"
-              onClick={() => setOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                path === "/upload"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-foreground/75 hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <Upload className="w-4 h-4" />
-              Upload Center
-            </Link>
-          )}
+          <a
+            href="https://www.youtube.com/@Brightminds-y77"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors"
+          >
+            <Youtube className="w-4 h-4 text-red-600" />
+            My YouTube Channel
+          </a>
         </nav>
 
         <div className="absolute bottom-0 inset-x-0 p-3 border-t border-border bg-card">
