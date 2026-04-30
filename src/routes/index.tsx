@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
-import { Video, FileText, BookOpen, ArrowRight, ExternalLink, Youtube, Upload, Download } from "lucide-react";
+import { Video, FileText, BookOpen, ArrowRight, ExternalLink, Youtube, Upload, Download, Sun, Moon } from "lucide-react";
 import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-store";
 import { useBlogPosts } from "@/lib/blog-store";
+import { useTheme } from "@/hooks/use-theme";
+import { Button } from "@/components/ui/button";
 import ownerAvatar from "@/assets/owner-avatar.webp";
 
 export const Route = createFileRoute("/")({
@@ -20,6 +22,7 @@ function DashboardHome() {
   const { videos } = useUploadedVideos();
   const { files } = useUploadedFiles();
   const { posts } = useBlogPosts();
+  const { theme, toggle } = useTheme();
 
   const stats = [
     { label: "Total Videos", value: videos.length, icon: Video, to: "/videos", color: "bg-primary/10 text-primary" },
@@ -47,6 +50,16 @@ function DashboardHome() {
           </p>
         </div>
         <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggle}
+            aria-label="Toggle theme"
+            className="gap-2"
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {theme === "dark" ? "Light" : "Dark"}
+          </Button>
           <a
             href="https://www.youtube.com/@Brightminds-y77"
             target="_blank"
