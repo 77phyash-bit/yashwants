@@ -5,9 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { BookOpen, Send, Trash2 } from "lucide-react";
+import { BookOpen, Send, Trash2, Download } from "lucide-react";
 import { useBlogPosts, addBlogPost, removeBlogPost } from "@/lib/blog-store";
-import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/blog")({
@@ -22,7 +21,6 @@ export const Route = createFileRoute("/blog")({
 
 function BlogPage() {
   const { posts, loading } = useBlogPosts();
-  const { isAdmin } = useAuth();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState(false);
@@ -51,8 +49,7 @@ function BlogPage() {
       title="Blog"
       subtitle={`${posts.length} post${posts.length === 1 ? "" : "s"}`}
     >
-      {isAdmin && (
-        <Card className="p-6 rounded-xl mb-6">
+      <Card className="p-6 rounded-xl mb-6">
           <h2 className="font-display font-bold text-lg mb-4">Write a new post</h2>
           <form onSubmit={handlePost} className="space-y-4">
             <div>
@@ -81,8 +78,7 @@ function BlogPage() {
               </Button>
             </div>
           </form>
-        </Card>
-      )}
+      </Card>
 
       {loading ? (
         <p className="text-muted-foreground text-sm">Loading…</p>
@@ -90,9 +86,7 @@ function BlogPage() {
         <Card className="p-12 text-center rounded-xl border-dashed border-2">
           <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
           <p className="font-semibold mb-1">No blog posts yet</p>
-          <p className="text-sm text-muted-foreground">
-            {isAdmin ? "Use the editor above to publish your first post." : "Check back soon."}
-          </p>
+          <p className="text-sm text-muted-foreground">Use the editor above to publish your first post.</p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -107,7 +101,22 @@ function BlogPage() {
                     })}
                   </p>
                 </div>
-                {isAdmin && (
+                <div className="flex items-center gap-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const blob = new Blob([`${p.title}\n\n${p.content}`], { type: "text/plain" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `${p.title.replace(/[^a-z0-9]+/gi, "_")}.txt`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                  >
+                    <Download className="w-4 h-4" /> Download
+                  </Button>
                   <Button
                     size="icon"
                     variant="ghost"
@@ -120,7 +129,7 @@ function BlogPage() {
                   >
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
-                )}
+                </div>
               </div>
               <div className="prose prose-sm max-w-none text-foreground/85 whitespace-pre-wrap">
                 {p.content}
