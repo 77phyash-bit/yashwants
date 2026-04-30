@@ -2,9 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Upload, ExternalLink, File as FileIcon, Image as ImageIcon, Video, Trash2 } from "lucide-react";
+import { FileText, Upload, ExternalLink, File as FileIcon, Image as ImageIcon, Video, Trash2, Download } from "lucide-react";
 import { useUploadedFiles, formatBytes, removeFile } from "@/lib/content-store";
-import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/content")({
@@ -19,13 +18,12 @@ export const Route = createFileRoute("/content")({
 
 function ContentPage() {
   const { files, loading } = useUploadedFiles();
-  const { isAdmin } = useAuth();
 
-  const action = isAdmin ? (
+  const action = (
     <Button asChild size="sm">
       <Link to="/upload"><Upload className="w-4 h-4" /> Upload Document</Link>
     </Button>
-  ) : null;
+  );
 
   return (
     <DashboardLayout
@@ -39,9 +37,7 @@ function ContentPage() {
         <Card className="p-12 text-center rounded-xl border-dashed border-2">
           <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
           <p className="font-semibold mb-1">No documents yet</p>
-          <p className="text-sm text-muted-foreground">
-            {isAdmin ? "Upload your first document to get started." : "Check back soon."}
-          </p>
+          <p className="text-sm text-muted-foreground">Upload your first document to get started.</p>
         </Card>
       ) : (
         <Card className="rounded-xl divide-y divide-border">
@@ -68,19 +64,22 @@ function ContentPage() {
                   <ExternalLink className="w-4 h-4" /> Open
                 </a>
               </Button>
-              {isAdmin && (
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={async () => {
-                    try { await removeFile(f); toast.success("Removed."); }
-                    catch { toast.error("Could not remove."); }
-                  }}
-                  aria-label="Remove document"
-                >
-                  <Trash2 className="w-4 h-4 text-destructive" />
-                </Button>
-              )}
+              <Button size="sm" variant="default" asChild>
+                <a href={f.public_url} download={f.name} target="_blank" rel="noopener noreferrer">
+                  <Download className="w-4 h-4" /> Download
+                </a>
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={async () => {
+                  try { await removeFile(f); toast.success("Removed."); }
+                  catch { toast.error("Could not remove."); }
+                }}
+                aria-label="Remove document"
+              >
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
             </div>
           ))}
         </Card>
