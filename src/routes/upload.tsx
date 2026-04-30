@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState, useRef } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,6 @@ import {
   File as FileIcon,
   Cloud,
   ExternalLink,
-  Lock,
 } from "lucide-react";
 import {
   addVideo,
@@ -30,7 +29,6 @@ import {
   useUploadedFiles,
   useUploadedVideos,
 } from "@/lib/content-store";
-import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/upload")({
   head: () => ({
@@ -44,43 +42,6 @@ export const Route = createFileRoute("/upload")({
 
 function UploadPage() {
   const [tab, setTab] = useState<"video" | "file">("video");
-  const { user, isAdmin, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate({ to: "/auth" });
-    }
-  }, [user, loading, navigate]);
-
-  if (loading) {
-    return (
-      <DashboardLayout title="Upload Center">
-        <div className="text-center text-muted-foreground py-24">Loading…</div>
-      </DashboardLayout>
-    );
-  }
-
-  if (!user) return null;
-
-  if (!isAdmin) {
-    return (
-      <DashboardLayout title="Upload Center">
-        <Card className="p-10 max-w-md mx-auto text-center rounded-xl">
-          <span className="inline-grid place-items-center w-14 h-14 rounded-2xl bg-secondary text-primary mx-auto mb-4">
-            <Lock className="w-6 h-6" />
-          </span>
-          <h2 className="font-display font-bold text-2xl mb-2">Admin only</h2>
-          <p className="text-sm text-muted-foreground mb-5">
-            You're signed in as <strong>{user.email}</strong>, but this account isn't an admin.
-          </p>
-          <Link to="/" className="text-sm text-primary font-semibold hover:underline">
-            Back to dashboard
-          </Link>
-        </Card>
-      </DashboardLayout>
-    );
-  }
 
   return (
     <DashboardLayout

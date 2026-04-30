@@ -3,9 +3,8 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Video, Upload, Play, X } from "lucide-react";
+import { Video, Upload, Play, X, Youtube, Download } from "lucide-react";
 import { useUploadedVideos } from "@/lib/content-store";
-import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
@@ -19,14 +18,20 @@ export const Route = createFileRoute("/videos")({
 
 function VideosPage() {
   const { videos, loading } = useUploadedVideos();
-  const { isAdmin } = useAuth();
   const [active, setActive] = useState<string | null>(null);
 
-  const action = isAdmin ? (
-    <Button asChild size="sm">
-      <Link to="/upload"><Upload className="w-4 h-4" /> Upload Video</Link>
-    </Button>
-  ) : null;
+  const action = (
+    <div className="flex items-center gap-2">
+      <Button asChild size="sm" variant="outline">
+        <a href="https://www.youtube.com/@Brightminds-y77" target="_blank" rel="noopener noreferrer">
+          <Youtube className="w-4 h-4 text-red-600" /> My Channel
+        </a>
+      </Button>
+      <Button asChild size="sm">
+        <Link to="/upload"><Upload className="w-4 h-4" /> Upload Video</Link>
+      </Button>
+    </div>
+  );
 
   return (
     <DashboardLayout title="Videos" subtitle={`${videos.length} video${videos.length === 1 ? "" : "s"}`} action={action}>
@@ -36,9 +41,7 @@ function VideosPage() {
         <Card className="p-12 text-center rounded-xl border-dashed border-2">
           <Video className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
           <p className="font-semibold mb-1">No videos yet</p>
-          <p className="text-sm text-muted-foreground">
-            {isAdmin ? "Upload your first video to get started." : "Check back soon."}
-          </p>
+          <p className="text-sm text-muted-foreground">Upload your first video to get started.</p>
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -65,6 +68,18 @@ function VideosPage() {
                 <p className="text-xs text-muted-foreground mt-1">
                   {new Date(v.created_at).toLocaleDateString()}
                 </p>
+                <div className="mt-3 flex gap-2">
+                  <Button asChild size="sm" variant="outline" className="flex-1">
+                    <a href={`https://www.youtube.com/watch?v=${v.youtube_id}`} target="_blank" rel="noopener noreferrer">
+                      <Youtube className="w-3.5 h-3.5 text-red-600" /> Open
+                    </a>
+                  </Button>
+                  <Button asChild size="sm" variant="outline" className="flex-1">
+                    <a href={`https://www.y2mate.com/youtube/${v.youtube_id}`} target="_blank" rel="noopener noreferrer">
+                      <Download className="w-3.5 h-3.5" /> Download
+                    </a>
+                  </Button>
+                </div>
               </div>
             </Card>
           ))}

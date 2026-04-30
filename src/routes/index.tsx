@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
-import { Video, FileText, BookOpen, ArrowRight, ExternalLink } from "lucide-react";
+import { Video, FileText, BookOpen, ArrowRight, ExternalLink, Youtube, Upload, Download } from "lucide-react";
 import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-store";
 import { useBlogPosts } from "@/lib/blog-store";
-import { useAuth } from "@/hooks/use-auth";
 import ownerAvatar from "@/assets/owner-avatar.webp";
 
 export const Route = createFileRoute("/")({
@@ -21,7 +20,6 @@ function DashboardHome() {
   const { videos } = useUploadedVideos();
   const { files } = useUploadedFiles();
   const { posts } = useBlogPosts();
-  const { isAdmin } = useAuth();
 
   const stats = [
     { label: "Total Videos", value: videos.length, icon: Video, to: "/videos", color: "bg-primary/10 text-primary" },
@@ -45,19 +43,25 @@ function DashboardHome() {
             Hello, Creator
           </h2>
           <p className="text-sm text-muted-foreground">
-            {isAdmin
-              ? "You have full admin access — upload videos, documents and publish blog posts."
-              : "Browse the latest videos, documents and posts."}
+            Upload videos, documents and publish blog posts — open access.
           </p>
         </div>
-        {isAdmin && (
+        <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+          <a
+            href="https://www.youtube.com/@Brightminds-y77"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
+          >
+            <Youtube className="w-4 h-4" /> My Channel
+          </a>
           <Link
             to="/upload"
-            className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors flex-shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
           >
-            <ArrowRight className="w-4 h-4" /> Upload
+            <Upload className="w-4 h-4" /> Upload
           </Link>
-        )}
+        </div>
       </Card>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
@@ -131,13 +135,7 @@ function DashboardHome() {
           ) : (
             <div className="space-y-2">
               {recentFiles.map((f) => (
-                <a
-                  key={f.id}
-                  href={f.public_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors"
-                >
+                <div key={f.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors">
                   <span className="grid place-items-center w-9 h-9 rounded-lg bg-secondary text-primary flex-shrink-0">
                     <FileText className="w-4 h-4" />
                   </span>
@@ -145,8 +143,13 @@ function DashboardHome() {
                     <p className="font-medium text-sm truncate">{f.name}</p>
                     <p className="text-xs text-muted-foreground">{formatBytes(f.size)}</p>
                   </div>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                </a>
+                  <a href={f.public_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded hover:bg-background" aria-label="Open">
+                    <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                  </a>
+                  <a href={f.public_url} download={f.name} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded hover:bg-background" aria-label="Download">
+                    <Download className="w-4 h-4 text-primary" />
+                  </a>
+                </div>
               ))}
             </div>
           )}
