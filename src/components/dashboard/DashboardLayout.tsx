@@ -41,13 +41,13 @@ export function DashboardLayout({ children, title, subtitle, action }: {
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="px-5 py-5 border-b border-border flex items-center gap-2">
+        <div className="px-5 py-5 border-b border-border flex items-center gap-3">
           <img
             src={ownerAvatar}
             alt="Owner"
             loading="eager"
             decoding="sync"
-            className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30 shadow-sm"
+            className="w-20 h-20 rounded-full object-cover ring-2 ring-primary/30 shadow-md"
           />
           <div>
              <p className="font-display font-bold text-lg leading-tight text-[#1e07ed]">​YASHWANT</p>
