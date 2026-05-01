@@ -17,7 +17,9 @@ export const Route = createFileRoute("/content")({
 });
 
 function ContentPage() {
-  const { files, loading } = useUploadedFiles();
+  const { files: allFiles, loading } = useUploadedFiles();
+  // Exclude videos — they live in the Videos section
+  const files = allFiles.filter((f) => !f.type.startsWith("video/"));
 
   const action = (
     <Button asChild size="sm">
