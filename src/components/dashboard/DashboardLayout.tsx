@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import ownerAvatar from "@/assets/owner-avatar.webp";
+import ownerAvatar from "@/assets/owner-avatar-hd.jpg";
 
 const nav = [
   { to: "/", label: "Home", icon: LayoutDashboard },
@@ -45,7 +45,9 @@ export function DashboardLayout({ children, title, subtitle, action }: {
           <img
             src={ownerAvatar}
             alt="Owner"
-            className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/20"
+            loading="eager"
+            decoding="sync"
+            className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30 shadow-sm"
           />
           <div>
              <p className="font-display font-bold text-lg leading-tight text-[#1e07ed]">​YASHWANT</p>
