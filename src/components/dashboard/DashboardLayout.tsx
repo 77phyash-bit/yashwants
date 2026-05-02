@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Video, FileText, BookOpen, Upload, LogOut, LogIn, Menu, Youtube, Files } from "lucide-react";
+import { LayoutDashboard, Video, FileText, BookOpen, Upload, LogOut, LogIn, Menu, Youtube, Files, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import ownerAvatar from "@/assets/owner-avatar-hd.jpg";
 const nav = [
   { to: "/", label: "Home", icon: LayoutDashboard },
   { to: "/videos", label: "Videos", icon: Video },
+  { to: "/images", label: "Images", icon: ImageIcon },
   { to: "/content", label: "Content Writing", icon: FileText },
   { to: "/documents", label: "Documents", icon: Files },
   { to: "/blog", label: "Blog", icon: BookOpen },
