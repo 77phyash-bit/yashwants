@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as UploadRouteImport } from './routes/upload'
+import { Route as ImagesRouteImport } from './routes/images'
 import { Route as DocumentsRouteImport } from './routes/documents'
 import { Route as ContentRouteImport } from './routes/content'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -25,6 +26,11 @@ const VideosRoute = VideosRouteImport.update({
 const UploadRoute = UploadRouteImport.update({
   id: '/upload',
   path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImagesRoute = ImagesRouteImport.update({
+  id: '/images',
+  path: '/images',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocumentsRoute = DocumentsRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRoute
   '/content': typeof ContentRoute
   '/documents': typeof DocumentsRoute
+  '/images': typeof ImagesRoute
   '/upload': typeof UploadRoute
   '/videos': typeof VideosRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRoute
   '/content': typeof ContentRoute
   '/documents': typeof DocumentsRoute
+  '/images': typeof ImagesRoute
   '/upload': typeof UploadRoute
   '/videos': typeof VideosRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRoute
   '/content': typeof ContentRoute
   '/documents': typeof DocumentsRoute
+  '/images': typeof ImagesRoute
   '/upload': typeof UploadRoute
   '/videos': typeof VideosRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/content'
     | '/documents'
+    | '/images'
     | '/upload'
     | '/videos'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/content'
     | '/documents'
+    | '/images'
     | '/upload'
     | '/videos'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/content'
     | '/documents'
+    | '/images'
     | '/upload'
     | '/videos'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRoute
   ContentRoute: typeof ContentRoute
   DocumentsRoute: typeof DocumentsRoute
+  ImagesRoute: typeof ImagesRoute
   UploadRoute: typeof UploadRoute
   VideosRoute: typeof VideosRoute
 }
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/upload'
       fullPath: '/upload'
       preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/images': {
+      id: '/images'
+      path: '/images'
+      fullPath: '/images'
+      preLoaderRoute: typeof ImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/documents': {
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRoute,
   ContentRoute: ContentRoute,
   DocumentsRoute: DocumentsRoute,
+  ImagesRoute: ImagesRoute,
   UploadRoute: UploadRoute,
   VideosRoute: VideosRoute,
 }

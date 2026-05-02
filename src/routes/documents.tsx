@@ -20,7 +20,9 @@ export const Route = createFileRoute("/documents")({
 
 function DocumentsPage() {
   const { files: allFiles, loading } = useUploadedFiles();
-  const files = allFiles.filter((f) => !f.type.startsWith("video/"));
+  const files = allFiles.filter(
+    (f) => !f.type.startsWith("video/") && !f.type.startsWith("image/")
+  );
 
   const action = (
     <Button asChild size="sm">
