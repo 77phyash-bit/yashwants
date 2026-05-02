@@ -1,0 +1,82 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { FileText, Upload, ExternalLink, File as FileIcon, Image as ImageIcon, Trash2, Download } from "lucide-react";
+import { useUploadedFiles, formatBytes, removeFile } from "@/lib/content-store";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/documents")({
+  head: () => ({
+    meta: [
+      { title: "Documents — Creator Dashboard" },
+      { name: "description", content: "Browse and download all uploaded documents." },
+      { property: "og:title", content: "Documents — Creator Dashboard" },
+      { property: "og:description", content: "Browse and download all uploaded documents." },
+    ],
+  }),
+  component: DocumentsPage,
+});
+
+function DocumentsPage() {
+  const { files: allFiles, loading } = useUploadedFiles();
+  const files = allFiles.filter((f) => !f.type.startsWith("video/"));
+
+  const action = (
+    <Button asChild size="sm">
+      <Link to="/upload"><Upload className="w-4 h-4" /> Upload Document</Link>
+    </Button>
+  );
+
+  return (
+    <DashboardLayout
+      title="Documents"
+      subtitle={`${files.length} document${files.length === 1 ? "" : "s"} available`}
+      action={action}
+    >
+      {loading ? (
+        <p className="text-muted-foreground text-sm">Loading…</p>
+      ) : files.length === 0 ? (
+        <Card className="p-12 text-center rounded-xl border-dashed border-2">
+          <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="font-semibold mb-1">No documents yet</p>
+          <p className="text-sm text-muted-foreground">Upload your first document to get started.</p>
+        </Card>
+      ) : (
+        <Card className="rounded-xl divide-y divide-border">
+          {files.map((f) => (
+            <div key={f.id} className="p-4 flex items-center gap-4 hover:bg-secondary/40 transition-colors">
+              <div className="w-11 h-11 rounded-lg bg-secondary grid place-items-center text-primary flex-shrink-0">
+                {f.type.startsWith("image/") ? <ImageIcon className="w-5 h-5" /> : f.type.includes("pdf") || f.type.includes("text") || f.type.includes("document") ? <FileText className="w-5 h-5" /> : <FileIcon className="w-5 h-5" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <a href={f.public_url} target="_blank" rel="noopener noreferrer" className="font-medium text-sm truncate hover:text-primary block">
+                  {f.name}
+                </a>
+                <p className="text-xs text-muted-foreground">
+                  {formatBytes(f.size)} · {new Date(f.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              <Button size="sm" variant="outline" asChild>
+                <a href={f.public_url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4" /> Open
+                </a>
+              </Button>
+              <Button size="sm" variant="default" asChild>
+                <a href={f.public_url} download={f.name} target="_blank" rel="noopener noreferrer">
+                  <Download className="w-4 h-4" /> Download
+                </a>
+              </Button>
+              <Button size="icon" variant="ghost" onClick={async () => {
+                try { await removeFile(f); toast.success("Removed."); }
+                catch { toast.error("Could not remove."); }
+              }} aria-label="Remove document">
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
+          ))}
+        </Card>
+      )}
+    </DashboardLayout>
+  );
+}
