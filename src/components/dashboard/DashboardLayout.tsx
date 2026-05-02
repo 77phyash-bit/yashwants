@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Video, FileText, BookOpen, Upload, LogOut, LogIn, Menu, Youtube } from "lucide-react";
+import { LayoutDashboard, Video, FileText, BookOpen, Upload, LogOut, LogIn, Menu, Youtube, Files } from "lucide-react";
 import { useState } from "react";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ const nav = [
   { to: "/", label: "Home", icon: LayoutDashboard },
   { to: "/videos", label: "Videos", icon: Video },
   { to: "/content", label: "Content Writing", icon: FileText },
+  { to: "/documents", label: "Documents", icon: Files },
   { to: "/blog", label: "Blog", icon: BookOpen },
   { to: "/upload", label: "Upload Center", icon: Upload },
 ];
