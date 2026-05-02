@@ -24,14 +24,24 @@ function DashboardHome() {
   const { posts } = useBlogPosts();
   const { theme, toggle } = useTheme();
 
+  const videoFilesCount = files.filter((f) => f.type.startsWith("video/")).length;
+  const imageFilesCount = files.filter((f) => f.type.startsWith("image/")).length;
+  const documentsCount = files.filter(
+    (f) => !f.type.startsWith("video/") && !f.type.startsWith("image/")
+  ).length;
+  const totalVideos = videos.length + videoFilesCount;
+
   const stats = [
-    { label: "Total Videos", value: videos.length, icon: Video, to: "/videos", color: "bg-primary/10 text-primary" },
-    { label: "Total Documents", value: files.length, icon: FileText, to: "/content", color: "bg-accent text-accent-foreground" },
+    { label: "Total Videos", value: totalVideos, icon: Video, to: "/videos", color: "bg-primary/10 text-primary" },
+    { label: "Total Images", value: imageFilesCount, icon: FileText, to: "/images", color: "bg-secondary text-secondary-foreground" },
+    { label: "Total Documents", value: documentsCount, icon: FileText, to: "/documents", color: "bg-accent text-accent-foreground" },
     { label: "Total Blog Posts", value: posts.length, icon: BookOpen, to: "/blog", color: "bg-secondary text-secondary-foreground" },
   ];
 
   const recentVideos = videos.slice(0, 4);
-  const recentFiles = files.slice(0, 5);
+  const recentFiles = files
+    .filter((f) => !f.type.startsWith("video/") && !f.type.startsWith("image/"))
+    .slice(0, 5);
 
   return (
     <DashboardLayout title="Welcome back" subtitle="Here's what's happening with your content">
@@ -82,7 +92,7 @@ function DashboardHome() {
           const Icon = s.icon;
           return (
             <Link key={s.label} to={s.to} className="block">
-              <Card className="p-5 rounded-xl border-border hover:shadow-md transition-shadow text-black">
+          <Card className="p-5 rounded-xl border-border hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">{s.label}</p>
