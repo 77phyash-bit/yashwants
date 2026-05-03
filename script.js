@@ -29,4 +29,15 @@
       }
     });
   });
+  // Mobile menu toggle
+  var menuBtn = document.getElementById('menuToggle');
+  var navLinks = document.querySelector('.nav-links');
+  if(menuBtn && navLinks){
+    menuBtn.addEventListener('click', function(){
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){ navLinks.classList.remove('open'); });
+    });
+  }
 })();
