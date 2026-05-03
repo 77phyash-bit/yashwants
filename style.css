@@ -50,3 +50,16 @@ section{padding:80px 0}
 .socials a{padding:10px 20px;border:1px solid var(--border);border-radius:999px;font-weight:500;transition:background .2s}
 .socials a:hover{background:var(--primary);color:white;border-color:var(--primary)}
 footer{padding:32px 0;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--border)}
+.mobile-menu-btn{display:none}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;padding:48px 24px 24px;text-align:left}
+.footer-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;color:var(--fg)}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:8px}
+.footer-links a{color:var(--muted);font-size:14px;transition:color .2s}
+.footer-links a:hover{color:var(--primary)}
+.footer-bottom{padding-top:20px;border-top:1px solid var(--border);text-align:center}
+@media(max-width:768px){
+  .footer-grid{grid-template-columns:1fr 1fr;gap:24px}
+  .nav-links{position:fixed;top:72px;right:16px;left:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;flex-direction:column;gap:14px;display:none;box-shadow:0 20px 50px -20px rgba(0,0,0,.3)}
+  .nav-links.open{display:flex}
+  .mobile-menu-btn{display:inline-flex;align-items:center;justify-content:center}
+}
