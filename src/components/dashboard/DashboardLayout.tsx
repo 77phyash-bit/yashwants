@@ -127,7 +127,15 @@ export function DashboardLayout({ children, title, subtitle, action }: {
       {/* Main */}
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="sticky top-0 z-20 bg-background/80 backdrop-blur border-b border-border">
-          <div className="px-4 md:px-8 h-16 flex items-center justify-between gap-4">
+          <div
+            className="px-4 md:px-8 h-16 flex items-center justify-between gap-4"
+            style={{
+              background: "linear-gradient(135deg, #0b3d2e 0%, #145a3a 50%, #0b3d2e 100%)",
+              borderBottom: "2px solid transparent",
+              borderImage: "linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) 1",
+              boxShadow: "0 4px 20px -4px rgba(191,149,63,0.5), inset 0 1px 0 rgba(252,246,186,0.3)",
+            }}
+          >
             <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => setOpen(true)}
