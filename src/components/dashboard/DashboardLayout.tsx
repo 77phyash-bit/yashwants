@@ -52,7 +52,7 @@ export function DashboardLayout({ children, title, subtitle, action }: {
             className="w-20 h-20 rounded-full object-cover ring-2 ring-primary/30 shadow-md"
           />
           <div>
-             <p className="font-display font-bold text-lg leading-tight text-[#1e07ed]">​YASHWANT</p>
+            <p className="font-display font-bold text-lg leading-tight text-black dark:text-white">​YASHWANT</p>
             <p className="text-xs text-muted-foreground -mt-0.5">Dashboard</p>
           </div>
         </div>
