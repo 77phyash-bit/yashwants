@@ -136,14 +136,22 @@ export function DashboardLayout({ children, title, subtitle, action }: {
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <div className="min-w-0">
+              <div
+                className="min-w-0 px-4 py-2 rounded-lg"
+                style={{
+                  background: "linear-gradient(135deg, #0b3d2e 0%, #145a3a 50%, #0b3d2e 100%)",
+                  border: "2px solid transparent",
+                  borderImage: "linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) 1",
+                  boxShadow: "0 4px 20px -4px rgba(191,149,63,0.5), inset 0 1px 0 rgba(252,246,186,0.3)",
+                }}
+              >
                 {title && (
-                  <h1 className="font-display font-bold text-xl md:text-2xl leading-tight truncate">
+                  <h1 className="font-display font-bold text-xl md:text-2xl leading-tight truncate text-[#fcf6ba]">
                     {title}
                   </h1>
                 )}
                 {subtitle && (
-                  <p className="text-xs md:text-sm text-muted-foreground truncate">{subtitle}</p>
+                  <p className="text-xs md:text-sm truncate text-[#fcf6ba]/80">{subtitle}</p>
                 )}
               </div>
             </div>
