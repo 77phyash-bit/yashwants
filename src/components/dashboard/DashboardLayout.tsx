@@ -131,7 +131,7 @@ export function DashboardLayout({ children, title, subtitle, action }: {
             className="px-4 md:px-8 h-16 flex items-center justify-between gap-4"
             style={{
               background: "linear-gradient(135deg, #0b3d2e 0%, #145a3a 50%, #0b3d2e 100%)",
-              borderBottom: "2px solid transparent",
+              border: "2px solid transparent",
               borderImage: "linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) 1",
               boxShadow: "0 4px 20px -4px rgba(191,149,63,0.5), inset 0 1px 0 rgba(252,246,186,0.3)",
             }}
