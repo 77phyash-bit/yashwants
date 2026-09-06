@@ -13,6 +13,7 @@ import {
   Trash2,
   CheckCircle2,
   FileText,
+  FileSpreadsheet,
   Image as ImageIcon,
   Video,
   File as FileIcon,
@@ -26,6 +27,7 @@ import {
   removeFile,
   removeVideo,
   uploadFile,
+  isExcelFile,
   useUploadedFiles,
   useUploadedVideos,
 } from "@/lib/content-store";
@@ -261,7 +263,7 @@ function FileUploader() {
             {files.map((f) => (
               <Card key={f.id} className="p-3 rounded-lg flex items-center gap-3">
                 <div className="w-11 h-11 rounded-lg bg-secondary grid place-items-center text-primary flex-shrink-0">
-                  <FileTypeIcon type={f.type} />
+                  <FileTypeIcon name={f.name} type={f.type} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <a href={f.public_url} target="_blank" rel="noopener noreferrer" className="font-medium text-sm truncate hover:text-primary block">
@@ -289,9 +291,10 @@ function FileUploader() {
   );
 }
 
-function FileTypeIcon({ type }: { type: string }) {
+function FileTypeIcon({ name, type }: { name: string; type: string }) {
   if (type.startsWith("image/")) return <ImageIcon className="w-5 h-5" />;
   if (type.startsWith("video/")) return <Video className="w-5 h-5" />;
+  if (isExcelFile(name, type)) return <FileSpreadsheet className="w-5 h-5" />;
   if (type.includes("pdf") || type.includes("text") || type.includes("document"))
     return <FileText className="w-5 h-5" />;
   return <FileIcon className="w-5 h-5" />;

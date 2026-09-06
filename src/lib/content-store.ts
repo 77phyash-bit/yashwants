@@ -19,6 +19,11 @@ export type UploadedFile = {
   created_at: string;
 };
 
+export function isExcelFile(name: string, type: string): boolean {
+  const lowerName = name.toLowerCase();
+  return type.includes("spreadsheet") || type.includes("excel") || lowerName.endsWith(".xls") || lowerName.endsWith(".xlsx");
+}
+
 const CHANGE_EVENT = "ys-content-change";
 
 function notify() {
