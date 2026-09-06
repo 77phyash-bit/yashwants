@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, FileSpreadsheet, Upload, ExternalLink, File as FileIcon, Image as ImageIcon, Trash2, Download } from "lucide-react";
-import { useUploadedFiles, formatBytes, isExcelFile, removeFile } from "@/lib/content-store";
+import { FileText, FileSpreadsheet, Upload, ExternalLink, File as FileIcon, Image as ImageIcon, Trash2, Download, Eye, X } from "lucide-react";
+import { useUploadedFiles, formatBytes, isExcelFile, removeFile, type UploadedFile } from "@/lib/content-store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/documents")({
@@ -18,8 +19,13 @@ export const Route = createFileRoute("/documents")({
   component: DocumentsPage,
 });
 
+function isPdf(f: UploadedFile): boolean {
+  return f.type.includes("pdf") || f.name.toLowerCase().endsWith(".pdf");
+}
+
 function DocumentsPage() {
   const { files: allFiles, loading } = useUploadedFiles();
+  const [preview, setPreview] = useState<UploadedFile | null>(null);
   const files = allFiles.filter(
     (f) => !f.type.startsWith("video/") && !f.type.startsWith("image/")
   );
@@ -52,13 +58,24 @@ function DocumentsPage() {
                 {isExcelFile(f.name, f.type) ? <FileSpreadsheet className="w-5 h-5" /> : f.type.startsWith("image/") ? <ImageIcon className="w-5 h-5" /> : f.type.includes("pdf") || f.type.includes("text") || f.type.includes("document") ? <FileText className="w-5 h-5" /> : <FileIcon className="w-5 h-5" />}
               </div>
               <div className="flex-1 min-w-0">
-                <a href={f.public_url} target="_blank" rel="noopener noreferrer" title={f.name} className="font-medium text-sm break-all hover:text-primary block">
-                  {f.name}
-                </a>
+                {isPdf(f) ? (
+                  <button onClick={() => setPreview(f)} title={f.name} className="font-medium text-sm break-all hover:text-primary block text-left">
+                    {f.name}
+                  </button>
+                ) : (
+                  <a href={f.public_url} target="_blank" rel="noopener noreferrer" title={f.name} className="font-medium text-sm break-all hover:text-primary block">
+                    {f.name}
+                  </a>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {formatBytes(f.size)} · {new Date(f.created_at).toLocaleDateString()}
                 </p>
               </div>
+              {isPdf(f) && (
+                <Button size="sm" variant="secondary" onClick={() => setPreview(f)}>
+                  <Eye className="w-4 h-4" /> View
+                </Button>
+              )}
               <Button size="sm" variant="outline" asChild>
                 <a href={f.public_url} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="w-4 h-4" /> Open
@@ -78,6 +95,32 @@ function DocumentsPage() {
             </div>
           ))}
         </Card>
+      )}
+
+      {preview && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setPreview(null)}>
+          <div className="bg-card rounded-xl shadow-xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border">
+              <p className="font-medium text-sm truncate" title={preview.name}>{preview.name}</p>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Button size="sm" variant="outline" asChild>
+                  <a href={preview.public_url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="w-4 h-4" /> Open in new tab
+                  </a>
+                </Button>
+                <Button size="sm" variant="default" asChild>
+                  <a href={preview.public_url} download={preview.name} target="_blank" rel="noopener noreferrer">
+                    <Download className="w-4 h-4" /> Download
+                  </a>
+                </Button>
+                <Button size="icon" variant="ghost" onClick={() => setPreview(null)} aria-label="Close preview">
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            <iframe src={preview.public_url} title={preview.name} className="flex-1 w-full bg-white" />
+          </div>
+        </div>
       )}
     </DashboardLayout>
   );
