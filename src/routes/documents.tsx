@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, FileSpreadsheet, Upload, ExternalLink, File as FileIcon, Image as ImageIcon, Trash2, Download } from "lucide-react";
-import { useUploadedFiles, formatBytes, removeFile } from "@/lib/content-store";
+import { useUploadedFiles, formatBytes, isExcelFile, removeFile } from "@/lib/content-store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/documents")({
@@ -49,7 +49,7 @@ function DocumentsPage() {
           {files.map((f) => (
             <div key={f.id} className="p-4 flex items-center gap-4 hover:bg-secondary/40 transition-colors">
               <div className="w-11 h-11 rounded-lg bg-secondary grid place-items-center text-primary flex-shrink-0">
-                {f.type.includes("spreadsheet") || f.type.includes("excel") ? <FileSpreadsheet className="w-5 h-5" /> : f.type.startsWith("image/") ? <ImageIcon className="w-5 h-5" /> : f.type.includes("pdf") || f.type.includes("text") || f.type.includes("document") ? <FileText className="w-5 h-5" /> : <FileIcon className="w-5 h-5" />}
+                {isExcelFile(f.name, f.type) ? <FileSpreadsheet className="w-5 h-5" /> : f.type.startsWith("image/") ? <ImageIcon className="w-5 h-5" /> : f.type.includes("pdf") || f.type.includes("text") || f.type.includes("document") ? <FileText className="w-5 h-5" /> : <FileIcon className="w-5 h-5" />}
               </div>
               <div className="flex-1 min-w-0">
                 <a href={f.public_url} target="_blank" rel="noopener noreferrer" title={f.name} className="font-medium text-sm break-all hover:text-primary block">

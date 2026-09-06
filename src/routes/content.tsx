@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, FileSpreadsheet, Upload, ExternalLink, File as FileIcon, Image as ImageIcon, Video, Trash2, Download } from "lucide-react";
-import { useUploadedFiles, formatBytes, removeFile } from "@/lib/content-store";
+import { useUploadedFiles, formatBytes, isExcelFile, removeFile } from "@/lib/content-store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/content")({
@@ -48,7 +48,7 @@ function ContentPage() {
           {files.map((f) => (
             <div key={f.id} className="p-4 flex items-center gap-4 hover:bg-secondary/40 transition-colors">
               <div className="w-11 h-11 rounded-lg bg-secondary grid place-items-center text-primary flex-shrink-0">
-                <FileTypeIcon type={f.type} />
+                  <FileTypeIcon name={f.name} type={f.type} />
               </div>
               <div className="flex-1 min-w-0">
                 <a
@@ -93,10 +93,10 @@ function ContentPage() {
   );
 }
 
-function FileTypeIcon({ type }: { type: string }) {
+function FileTypeIcon({ name, type }: { name: string; type: string }) {
   if (type.startsWith("image/")) return <ImageIcon className="w-5 h-5" />;
   if (type.startsWith("video/")) return <Video className="w-5 h-5" />;
-  if (type.includes("spreadsheet") || type.includes("excel")) return <FileSpreadsheet className="w-5 h-5" />;
+  if (isExcelFile(name, type)) return <FileSpreadsheet className="w-5 h-5" />;
   if (type.includes("pdf") || type.includes("text") || type.includes("document"))
     return <FileText className="w-5 h-5" />;
   return <FileIcon className="w-5 h-5" />;
