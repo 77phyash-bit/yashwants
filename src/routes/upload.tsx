@@ -13,6 +13,7 @@ import {
   Trash2,
   CheckCircle2,
   FileText,
+  FileSpreadsheet,
   Image as ImageIcon,
   Video,
   File as FileIcon,
@@ -292,6 +293,7 @@ function FileUploader() {
 function FileTypeIcon({ type }: { type: string }) {
   if (type.startsWith("image/")) return <ImageIcon className="w-5 h-5" />;
   if (type.startsWith("video/")) return <Video className="w-5 h-5" />;
+  if (type.includes("spreadsheet") || type.includes("excel")) return <FileSpreadsheet className="w-5 h-5" />;
   if (type.includes("pdf") || type.includes("text") || type.includes("document"))
     return <FileText className="w-5 h-5" />;
   return <FileIcon className="w-5 h-5" />;
