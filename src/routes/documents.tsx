@@ -118,7 +118,7 @@ function DocumentsPage() {
                 </Button>
               </div>
             </div>
-            <iframe src={preview.public_url} title={preview.name} className="flex-1 w-full bg-white" />
+            <iframe src={`/api/public/file?path=${encodeURIComponent(preview.storage_path)}`} title={preview.name} className="flex-1 w-full bg-white" />
           </div>
         </div>
       )}
