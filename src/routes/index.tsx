@@ -53,7 +53,7 @@ function DashboardHome() {
         />
         <div className="min-w-0 flex-1">
           <h2 className="font-display font-bold text-xl md:text-2xl truncate">
-            Hello, Creator
+            Hello Creators
           </h2>
           <p className="text-sm text-muted-foreground">
             Upload videos, documents and publish blog posts — open access.
