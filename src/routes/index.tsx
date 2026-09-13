@@ -83,7 +83,7 @@ function DashboardHome() {
             WELCOME TO LEARNING WORLD
           </p>
           <p
-            className="mt-6 text-center leading-none"
+            className="mt-4 text-center leading-none"
             style={{ fontFamily: "'Great Vibes', cursive", color: "#8a6d1a", fontSize: "2.5rem", textShadow: "0 1px 2px rgba(138,109,26,0.25)" }}
           >
             Yashwant Pharswan
