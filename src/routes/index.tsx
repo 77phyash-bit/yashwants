@@ -79,8 +79,14 @@ function DashboardHome() {
               <Upload className="w-4 h-4" /> Upload
             </Link>
           </div>
-          <p className="mt-4 font-display font-bold text-lg md:text-xl tracking-wide" style={{ color: "#8a6d1a" }}>
+          <p className="mt-4 text-center font-display font-bold text-lg md:text-xl tracking-wide" style={{ color: "#8a6d1a" }}>
             WELCOME TO LEARNING WORLD
+          </p>
+          <p
+            className="mt-2 text-center leading-none"
+            style={{ fontFamily: "'Great Vibes', cursive", color: "#8a6d1a", fontSize: "2.5rem", textShadow: "0 1px 2px rgba(138,109,26,0.25)" }}
+          >
+            Yashwant Pharswan
           </p>
         </div>
         <img
