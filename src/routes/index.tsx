@@ -45,8 +45,8 @@ function DashboardHome() {
 
   return (
     <DashboardLayout title="Welcome back" subtitle="Here's what's happening with your content">
-      <Card className="p-5 md:p-6 rounded-xl mb-6 flex items-center gap-4 md:gap-5 bg-gradient-to-r from-primary/5 to-accent/30 border-primary/10">
-        <div className="min-w-0 flex-1">
+      <Card className="rounded-xl mb-6 flex items-stretch gap-4 md:gap-5 bg-gradient-to-r from-primary/5 to-accent/30 border-primary/10 pl-5 pr-0 md:pl-6 overflow-hidden">
+        <div className="min-w-0 flex-1 py-5 md:py-6">
           <h2 className="font-display font-bold text-xl md:text-2xl truncate">
             Hello Creators
           </h2>
@@ -83,7 +83,7 @@ function DashboardHome() {
         <img
           src={studioPortrait}
           alt="Yashwant Singh"
-          className="w-40 h-40 md:w-52 md:h-52 rounded-full object-cover object-top ring-4 ring-primary/30 shadow-lg flex-shrink-0"
+          className="w-52 md:w-64 lg:w-72 flex-shrink-0 object-cover object-center"
         />
       </Card>
 
