@@ -6,7 +6,7 @@ import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-
 import { useBlogPosts } from "@/lib/blog-store";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
-import ownerAvatar from "@/assets/owner-avatar-hd.jpg";
+import studioPortrait from "@/assets/yashwant-studio.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,11 +46,6 @@ function DashboardHome() {
   return (
     <DashboardLayout title="Welcome back" subtitle="Here's what's happening with your content">
       <Card className="p-5 md:p-6 rounded-xl mb-6 flex items-center gap-4 md:gap-5 bg-gradient-to-r from-primary/5 to-accent/30 border-primary/10">
-        <img
-          src={ownerAvatar}
-          alt="Owner"
-          className="w-36 h-36 md:w-48 md:h-48 rounded-full object-cover ring-4 ring-primary/30 shadow-lg flex-shrink-0"
-        />
         <div className="min-w-0 flex-1">
           <h2 className="font-display font-bold text-xl md:text-2xl truncate">
             Hello Creators
@@ -58,33 +53,38 @@ function DashboardHome() {
           <p className="text-sm text-muted-foreground">
             Upload videos, documents and publish blog posts — open access.
           </p>
+          <div className="mt-3 flex items-center gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="gap-2"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === "dark" ? "Light" : "Dark"}
+            </Button>
+            <a
+              href="https://www.youtube.com/@Brightminds-y77"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
+            >
+              <Youtube className="w-4 h-4" /> My Channel
+            </a>
+            <Link
+              to="/upload"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+            >
+              <Upload className="w-4 h-4" /> Upload
+            </Link>
+          </div>
         </div>
-        <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggle}
-            aria-label="Toggle theme"
-            className="gap-2"
-          >
-            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            {theme === "dark" ? "Light" : "Dark"}
-          </Button>
-          <a
-            href="https://www.youtube.com/@Brightminds-y77"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
-          >
-            <Youtube className="w-4 h-4" /> My Channel
-          </a>
-          <Link
-            to="/upload"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
-          >
-            <Upload className="w-4 h-4" /> Upload
-          </Link>
-        </div>
+        <img
+          src={studioPortrait}
+          alt="Yashwant Singh"
+          className="w-40 h-40 md:w-52 md:h-52 rounded-full object-cover object-top ring-4 ring-primary/30 shadow-lg flex-shrink-0"
+        />
       </Card>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
