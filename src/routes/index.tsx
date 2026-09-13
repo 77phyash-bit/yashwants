@@ -79,6 +79,9 @@ function DashboardHome() {
               <Upload className="w-4 h-4" /> Upload
             </Link>
           </div>
+          <p className="mt-4 font-display font-bold text-lg md:text-xl tracking-wide" style={{ color: "#8a6d1a" }}>
+            WELCOME TO LEARNING WORLD
+          </p>
         </div>
         <img
           src={studioPortrait}
