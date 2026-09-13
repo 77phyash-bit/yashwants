@@ -92,7 +92,7 @@ function DashboardHome() {
         <img
           src={studioPortrait}
           alt="Yashwant Singh"
-          className="w-52 md:w-64 lg:w-72 flex-shrink-0 object-cover object-center"
+          className="w-2/5 md:w-1/2 flex-shrink-0 object-cover object-center"
         />
       </Card>
 
