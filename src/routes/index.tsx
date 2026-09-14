@@ -44,7 +44,7 @@ function DashboardHome() {
     .slice(0, 5);
 
   return (
-    <DashboardLayout title="Welcome back" subtitle="Here's what's happening with your content">
+    <DashboardLayout>
       <Card className="rounded-xl mb-6 flex items-stretch gap-4 md:gap-5 bg-gradient-to-r from-primary/5 to-accent/30 border-primary/10 pl-5 pr-0 md:pl-6 overflow-hidden">
         <div className="min-w-0 flex-1 py-3 md:py-4 flex flex-col">
           <div className="flex-1 flex flex-col justify-center">
