@@ -46,48 +46,50 @@ function DashboardHome() {
   return (
     <DashboardLayout title="Welcome back" subtitle="Here's what's happening with your content">
       <Card className="rounded-xl mb-6 flex items-stretch gap-4 md:gap-5 bg-gradient-to-r from-primary/5 to-accent/30 border-primary/10 pl-5 pr-0 md:pl-6 overflow-hidden">
-        <div className="min-w-0 flex-1 py-3 md:py-4">
-          <h2 className="font-display font-bold text-xl md:text-2xl truncate">
-            Hello Creators
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Upload videos, documents and publish blog posts — open access.
-          </p>
-          <div className="mt-3 flex items-center gap-2 flex-wrap">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggle}
-              aria-label="Toggle theme"
-              className="gap-2"
-            >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              {theme === "dark" ? "Light" : "Dark"}
-            </Button>
-            <a
-              href="https://www.youtube.com/@Brightminds-y77"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
-            >
-              <Youtube className="w-4 h-4" /> My Channel
-            </a>
-            <Link
-              to="/upload"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
-            >
-              <Upload className="w-4 h-4" /> Upload
-            </Link>
+        <div className="min-w-0 flex-1 py-3 md:py-4 flex flex-col">
+          <div className="flex-1 flex flex-col justify-center">
+            <h2 className="font-display font-bold text-xl md:text-2xl truncate">
+              Hello Creators
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Upload videos, documents and publish blog posts — open access.
+            </p>
+            <div className="mt-3 flex items-center gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggle}
+                aria-label="Toggle theme"
+                className="gap-2"
+              >
+                {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {theme === "dark" ? "Light" : "Dark"}
+              </Button>
+              <a
+                href="https://www.youtube.com/@Brightminds-y77"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
+              >
+                <Youtube className="w-4 h-4" /> My Channel
+              </a>
+              <Link
+                to="/upload"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+              >
+                <Upload className="w-4 h-4" /> Upload
+              </Link>
+            </div>
+            <p className="mt-3 text-center font-display font-bold text-lg md:text-xl tracking-wide" style={{ color: "#8a6d1a" }}>
+              WELCOME TO LEARNING WORLD
+            </p>
+            <p className="mt-2 text-center text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
+              Learn, grow and explore with easy lessons, fun videos and helpful resources —
+              everything you need to make learning simple and joyful, for students and parents alike.
+            </p>
           </div>
-          <p className="mt-3 text-center font-display font-bold text-lg md:text-xl tracking-wide" style={{ color: "#8a6d1a" }}>
-            WELCOME TO LEARNING WORLD
-          </p>
-          <p className="mt-2 text-center text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
-            Learn, grow and explore with easy lessons, fun videos and helpful resources —
-            everything you need to make learning simple and joyful, for students and parents alike.
-          </p>
           <p
-            className="mt-3 text-center leading-none"
+            className="mt-auto pt-3 text-center leading-none"
             style={{ fontFamily: "'Great Vibes', cursive", color: "#8a6d1a", fontSize: "2.5rem", textShadow: "0 1px 2px rgba(138,109,26,0.25)" }}
           >
             Yashwant Pharswan
