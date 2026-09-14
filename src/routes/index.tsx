@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
-import { Video, FileText, BookOpen, ArrowRight, ExternalLink, Youtube, Upload, Download, Sun, Moon } from "lucide-react";
+import { Video, FileText, BookOpen, ArrowRight, ExternalLink, Youtube, Upload, Download, Sun, Moon, PlayCircle, PenLine } from "lucide-react";
 import { useUploadedVideos, useUploadedFiles, formatBytes } from "@/lib/content-store";
 import { useBlogPosts } from "@/lib/blog-store";
 import { useTheme } from "@/hooks/use-theme";
@@ -84,9 +84,29 @@ function DashboardHome() {
               WELCOME TO LEARNING WORLD
             </p>
             <p className="mt-2 text-center text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
-              Learn, grow and explore with easy lessons, fun videos and helpful resources —
-              everything you need to make learning simple and joyful, for students and parents alike.
+              Explore our rich ecosystem of easy lessons, fun videos, and helpful resources.
+              Designed for simple and joyful learning, curated for everyone.
             </p>
+            <div className="mt-4 space-y-2 max-w-md mx-auto w-full">
+              {[
+                { icon: BookOpen, title: "Structured Guides", desc: "Detailed, step-by-step learning materials." },
+                { icon: PlayCircle, title: "Inspiring Videos", desc: "Engaging video content to spark curiosity." },
+                { icon: PenLine, title: "Active Blog", desc: "Articles to foster critical thinking and discussion." },
+              ].map((item) => {
+                const PathIcon = item.icon;
+                return (
+                  <div key={item.title} className="flex items-start gap-3 rounded-lg px-3 py-2 bg-background/60 border border-primary/10">
+                    <span className="mt-0.5 grid place-items-center w-7 h-7 rounded-md shrink-0" style={{ backgroundColor: "rgba(138,109,26,0.12)", color: "#8a6d1a" }}>
+                      <PathIcon className="w-4 h-4" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-display font-bold text-sm" style={{ color: "#8a6d1a" }}>{item.title}</p>
+                      <p className="text-xs text-muted-foreground leading-snug">{item.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
           <p
             className="mt-auto pt-3 text-center leading-none"
