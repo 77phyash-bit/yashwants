@@ -82,8 +82,12 @@ function DashboardHome() {
           <p className="mt-3 text-center font-display font-bold text-lg md:text-xl tracking-wide" style={{ color: "#8a6d1a" }}>
             WELCOME TO LEARNING WORLD
           </p>
+          <p className="mt-2 text-center text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
+            Learn, grow and explore with easy lessons, fun videos and helpful resources —
+            everything you need to make learning simple and joyful, for students and parents alike.
+          </p>
           <p
-            className="mt-4 text-center leading-none"
+            className="mt-3 text-center leading-none"
             style={{ fontFamily: "'Great Vibes', cursive", color: "#8a6d1a", fontSize: "2.5rem", textShadow: "0 1px 2px rgba(138,109,26,0.25)" }}
           >
             Yashwant Pharswan
